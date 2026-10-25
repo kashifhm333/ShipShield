@@ -1,0 +1,22 @@
+{
+  "name": "@shipshield/cli",
+  "version": "1.0.0",
+  "type": "module",
+  "bin": {
+    "shipshield": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@shipshield/contracts": "*",
+    "@shipshield/scan-core": "*",
+    "@shipshield/scanner-adapters": "*",
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}

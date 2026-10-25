@@ -1,0 +1,8 @@
+// Synthetic test credentials for security testing
+const AWS_ACCESS_KEY_ID = "AKIAIOSFODNN7EXAMPLE";
+const GITHUB_PERSONAL_TOKEN = "ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+module.exports = {
+  AWS_ACCESS_KEY_ID,
+  GITHUB_PERSONAL_TOKEN,
+};

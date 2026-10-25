@@ -1,0 +1,37 @@
+name: ShipShield CI/CD & Security Gate
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  validate:
+    name: Typecheck, Lint, Test & Coverage Gate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.11.0'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: TypeScript Typecheck
+        run: npm run typecheck
+
+      - name: Unit & Integration Test Suite (Coverage >= 85%)
+        run: npm run test:coverage
+
+      - name: Build Monorepo
+        run: npm run build
+
+      - name: Dogfood CLI Scan on ShipShield Repository
+        run: node apps/cli/dist/index.js --project-dir . plan --no-report

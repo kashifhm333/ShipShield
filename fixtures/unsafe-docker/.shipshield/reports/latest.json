@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0",
+  "tool": { "name": "shipshield", "version": "1.0.0" },
+  "scan": {
+    "id": "scan_unsafe_docker_test_001",
+    "started_at": "2026-10-24T12:00:00.000Z",
+    "completed_at": "2026-10-24T12:00:05.000Z",
+    "scope": { "kind": "full", "root": "." },
+    "execution_status": "completed",
+    "policy_outcome": "policy_failed"
+  },
+  "project": { "name": "unsafe-docker" },
+  "scanners": [
+    {
+      "id": "containers",
+      "status": "completed",
+      "engine": "trivy",
+      "duration_ms": 120,
+      "finding_count": 1,
+      "error_message": null
+    }
+  ],
+  "summary": {
+    "findings_total": 1,
+    "by_severity": { "critical": 0, "high": 1, "medium": 0, "low": 0, "info": 0 },
+    "policy_violations": 1
+  },
+  "findings": [
+    {
+      "id": "SS-CON-8Y3K2B",
+      "fingerprint": "sha256:1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b",
+      "type": "container-misconfiguration",
+      "category": "containers",
+      "scanner": "trivy",
+      "rule_id": "DS002",
+      "title": "Container Image Runs as Root User",
+      "description": "Dockerfile does not specify non-root USER",
+      "severity": "high",
+      "severity_original": "HIGH",
+      "confidence": "high",
+      "location": { "path": "Dockerfile" },
+      "evidence": { "redacted": true, "summary": "No USER instruction" },
+      "remediation": {
+        "summary": "Add USER 10001:10001 instruction",
+        "fix_available": true,
+        "fix_strategy": "dockerfile-non-root"
+      },
+      "status": "new",
+      "references": []
+    }
+  ],
+  "policy": {
+    "passed": false,
+    "rules_evaluated": 1,
+    "violations": [
+      {
+        "rule_id": "DS002",
+        "finding_id": "SS-CON-8Y3K2B",
+        "finding_fingerprint": "sha256:1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b",
+        "message": "Root container"
+      }
+    ]
+  },
+  "warnings": [],
+  "errors": []
+}

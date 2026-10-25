@@ -1,0 +1,77 @@
+{
+  "schema_version": "1.0",
+  "tool": {
+    "name": "shipshield",
+    "version": "1.0.0"
+  },
+  "scan": {
+    "id": "scan_mvmn6lzvb7d22b4a9e8e44ad",
+    "started_at": "2026-10-24T16:57:38.010Z",
+    "completed_at": "2026-10-24T16:57:38.017Z",
+    "scope": {
+      "kind": "full",
+      "root": "/home/kashifhm333/Desktop/Project/ShipShield/packages/scan-core"
+    },
+    "execution_status": "completed",
+    "policy_outcome": "incomplete"
+  },
+  "project": {
+    "name": "auto"
+  },
+  "scanners": [
+    {
+      "id": "containers",
+      "status": "not_applicable",
+      "engine": "trivy",
+      "duration_ms": 0,
+      "finding_count": 0,
+      "error_message": null
+    },
+    {
+      "id": "iac",
+      "status": "not_applicable",
+      "engine": "checkov",
+      "duration_ms": 0,
+      "finding_count": 0,
+      "error_message": null
+    },
+    {
+      "id": "secrets",
+      "status": "skipped",
+      "engine": "gitleaks",
+      "duration_ms": 5,
+      "finding_count": 0,
+      "error_message": "spawn gitleaks ENOENT"
+    },
+    {
+      "id": "dependencies",
+      "status": "skipped",
+      "engine": "trivy",
+      "duration_ms": 2,
+      "finding_count": 0,
+      "error_message": "spawn trivy ENOENT"
+    }
+  ],
+  "summary": {
+    "findings_total": 0,
+    "by_severity": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0,
+      "info": 0
+    },
+    "policy_violations": 0
+  },
+  "findings": [],
+  "policy": {
+    "passed": false,
+    "rules_evaluated": 0,
+    "violations": []
+  },
+  "warnings": [],
+  "errors": [
+    "[secrets] spawn gitleaks ENOENT",
+    "[dependencies] spawn trivy ENOENT"
+  ]
+}
