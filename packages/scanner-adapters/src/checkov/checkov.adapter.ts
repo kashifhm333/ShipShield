@@ -99,7 +99,7 @@ export class CheckovAdapter implements ScannerAdapter {
         '--directory',
         options.workspacePath,
         '--framework',
-        'terraform',
+        'terraform,github_actions',
         '--output',
         'json',
         '--output-file-path',
@@ -217,8 +217,8 @@ export class CheckovAdapter implements ScannerAdapter {
 
           const id = FingerprintGenerator.generatePublicId('iac', fingerprint);
           const severity = this.mapSeverity(check.check_id, check.severity);
-          const startLine = check.file_line_range ? check.file_line_range[0] : undefined;
-          const endLine = check.file_line_range ? check.file_line_range[1] : undefined;
+          const startLine = check.file_line_range ? Math.max(1, check.file_line_range[0]) : undefined;
+          const endLine = check.file_line_range ? Math.max(1, check.file_line_range[1]) : undefined;
 
           findings.push({
             id,

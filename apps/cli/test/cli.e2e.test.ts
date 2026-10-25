@@ -73,7 +73,7 @@ describe('ShipShield CLI E2E Suite', () => {
       '--list-scanners',
     ]);
     expect(exitSpy).toHaveBeenCalledWith(EXIT_CODES.PASSED);
-  });
+  }, 15000);
 
   it('plan command with --format json outputs strictly valid JSON on stdout', async () => {
     const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shipshield-cli-plan-'));

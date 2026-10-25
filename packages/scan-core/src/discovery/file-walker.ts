@@ -101,8 +101,12 @@ export class FileWalker {
             hasContainers = true;
           }
 
-          // Check IaC (Terraform)
-          if (lowerName.endsWith('.tf') || lowerName.endsWith('.tf.json')) {
+          // Check IaC (Terraform, GitHub Actions workflows)
+          if (
+            lowerName.endsWith('.tf') ||
+            lowerName.endsWith('.tf.json') ||
+            (relPath.includes('.github/workflows') && (lowerName.endsWith('.yml') || lowerName.endsWith('.yaml')))
+          ) {
             hasIac = true;
           }
         }
