@@ -16,7 +16,26 @@ export function createApp(): express.Application {
   const app = express();
 
   app.use(helmet());
-  app.use(cors({ origin: true, credentials: true }));
+
+  const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim())
+    : ['http://localhost:5173', 'http://127.0.0.1:5173'];
+
+  app.use(
+    cors({
+      origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
+          return callback(null, true);
+        }
+        if (allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
+        return callback(new Error('CORS policy rejection: Origin not allowed.'));
+      },
+      credentials: true,
+    })
+  );
 
   // Raw body capture for HMAC verification on webhooks
   app.use(

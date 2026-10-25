@@ -5,6 +5,9 @@ import {
   EngineResponse,
   EngineStatus,
   EnginePlanParams,
+  SubmitScanParams,
+  ListScansParams,
+  JobRecord,
 } from '@shipshield/contracts';
 import { getEnginePaths } from './engine-paths.js';
 
@@ -140,6 +143,47 @@ export class EngineClient {
     const res = await this.sendRequest('plan', params, timeout + 10000);
     if (!res.success) {
       throw new Error(res.error || 'Engine failed to execute plan');
+    }
+    return res.data;
+  }
+
+  public async submitScan(params: SubmitScanParams): Promise<any> {
+    const timeout = (params.timeoutSeconds || 600) * 1000;
+    const res = await this.sendRequest('submit_scan', params, timeout + 10000);
+    if (!res.success) {
+      throw new Error(res.error || 'Engine failed to submit scan');
+    }
+    return res.data;
+  }
+
+  public async getScan(scanId: string): Promise<JobRecord> {
+    const res = await this.sendRequest<JobRecord>('get_scan', { scanId }, 5000);
+    if (!res.success || !res.data) {
+      throw new Error(res.error || `Failed to get scan ${scanId}`);
+    }
+    return res.data;
+  }
+
+  public async listScans(filters?: ListScansParams): Promise<JobRecord[]> {
+    const res = await this.sendRequest<JobRecord[]>('list_scans', filters, 5000);
+    if (!res.success || !res.data) {
+      throw new Error(res.error || 'Failed to list scans');
+    }
+    return res.data;
+  }
+
+  public async getResults(scanId?: string, projectRoot?: string): Promise<{ job: JobRecord; report?: any }> {
+    const res = await this.sendRequest<{ job: JobRecord; report?: any }>('get_results', { scanId, projectRoot }, 10000);
+    if (!res.success || !res.data) {
+      throw new Error(res.error || 'Failed to get scan results');
+    }
+    return res.data;
+  }
+
+  public async cancelScan(scanId: string): Promise<{ cancelled: boolean; message: string }> {
+    const res = await this.sendRequest<{ cancelled: boolean; message: string }>('cancel_scan', { scanId }, 5000);
+    if (!res.success || !res.data) {
+      throw new Error(res.error || `Failed to cancel scan ${scanId}`);
     }
     return res.data;
   }

@@ -1,10 +1,10 @@
 # ShipShield Security Gate Report
 
-**Scan ID:** `scan_mvng6o3q9b7e6b9620413a17`  
+**Scan ID:** `scan_mvnhm4mk78d70496eddec05a`  
 **Status:** **POLICY FAILED**  
 **Execution Status:** `completed`  
-**Started:** `2026-10-25T06:29:29.606Z`  
-**Completed:** `2026-10-25T06:29:29.682Z`  
+**Started:** `2026-10-25T07:09:30.476Z`  
+**Completed:** `2026-10-25T07:09:30.557Z`  
 
 ---
 
@@ -26,7 +26,7 @@
 
 | Scanner | Engine | Status | Duration | Findings |
 |:---|:---|:---|:---|:---|
-| **secrets** | gitleaks v8.18.2 | `completed` | 75ms | 2 |
+| **secrets** | gitleaks v8.18.2 | `completed` | 80ms | 2 |
 
 ---
 

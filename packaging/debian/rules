@@ -1,0 +1,14 @@
+#!/usr/bin/make -f
+%:
+	dh $@
+
+override_dh_auto_build:
+	npm run build
+
+override_dh_auto_install:
+	mkdir -p debian/shipshield/usr/lib/shipshield
+	mkdir -p debian/shipshield/usr/bin
+	mkdir -p debian/shipshield/usr/lib/systemd/user
+	cp -r packages apps package*.json node_modules debian/shipshield/usr/lib/shipshield/
+	cp packaging/systemd/shipshield-engine.service debian/shipshield/usr/lib/systemd/user/
+	ln -s /usr/lib/shipshield/apps/cli/dist/index.js debian/shipshield/usr/bin/shipshield

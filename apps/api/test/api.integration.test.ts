@@ -3,6 +3,7 @@ import request from 'supertest';
 import crypto from 'node:crypto';
 import { createApp } from '../src/app.js';
 import { verifyGitHubSignature } from '../src/routes/webhooks.routes.js';
+import { createSignedToken } from '../src/middleware/auth.middleware.js';
 import { config } from '../src/config/env.js';
 import { RepositoryModel } from '../src/db/models/repository.model.js';
 import { WebhookEventModel } from '../src/db/models/webhook-event.model.js';
@@ -352,6 +353,12 @@ describe('Control Plane REST API Integration Suite', () => {
       const { FindingModel } = await import('../src/db/models/finding.model.js');
       const { SuppressionModel } = await import('../src/db/models/suppression.model.js');
 
+      const validToken = createSignedToken({
+        userId: 'u1',
+        organizationId: '6650a1b2c3d4e5f6a7b8c901',
+        role: 'admin',
+      });
+
       // 1. Scans with query params
       const findSpy = vi.spyOn(ScanModel, 'find').mockReturnValue({
         sort: () => Promise.resolve([]),
@@ -515,16 +522,24 @@ describe('Control Plane REST API Integration Suite', () => {
       expect(notFoundRes.status).toBe(404);
       expect(notFoundRes.body.error.code).toBe('RESOURCE_NOT_FOUND');
 
-      // 15. Raw JSON auth token & colon auth token
-      const rawJsonAuthRes = await request(app)
+      // 15. Signed JWT authentication test and rejection of forged tokens
+      const jwtTestToken = createSignedToken({
+        userId: 'u1',
+        organizationId: '6650a1b2c3d4e5f6a7b8c901',
+        role: 'admin',
+      });
+      const validAuthRes = await request(app)
         .get('/api/v1/repositories')
-        .set('Authorization', 'Bearer {"userId":"u1","organizationId":"6650a1b2c3d4e5f6a7b8c901","role":"admin"}');
-      expect(rawJsonAuthRes.status).toBe(200);
+        .set('Authorization', `Bearer ${jwtTestToken}`);
+      expect(validAuthRes.status).toBe(200);
 
-      const colonAuthRes = await request(app)
+      // Insecure forged/raw tokens are rejected
+      const forgedToken = jwtTestToken.slice(0, -6) + 'xxxxxx';
+      const forgedAuthRes = await request(app)
         .get('/api/v1/repositories')
-        .set('Authorization', 'Bearer 6650a1b2c3d4e5f6a7b8c901:user_1:admin');
-      expect(colonAuthRes.status).toBe(200);
+        .set('Authorization', `Bearer ${forgedToken}`);
+      expect(forgedAuthRes.status).toBe(401);
+      expect(forgedAuthRes.body.error.code).toBe('UNAUTHENTICATED');
     });
   });
 });

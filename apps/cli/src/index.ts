@@ -3,6 +3,12 @@ import { Command, CommanderError } from 'commander';
 import { EXIT_CODES } from '@shipshield/contracts';
 import { makeInitCommand } from './commands/init.command.js';
 import { makePlanCommand } from './commands/plan.command.js';
+import { makeScanCommand } from './commands/scan.command.js';
+import { makeScansCommand } from './commands/scans.command.js';
+import { makeStatusCommand } from './commands/status.command.js';
+import { makeResultsCommand } from './commands/results.command.js';
+import { makeCancelCommand } from './commands/cancel.command.js';
+import { makeDoctorCommand } from './commands/doctor.command.js';
 import { makeShowCommand } from './commands/show.command.js';
 import { makeFixCommand } from './commands/fix.command.js';
 import { makeVerifyCommand } from './commands/verify.command.js';
@@ -39,12 +45,18 @@ export function createProgram(): Command {
   program.exitOverride(overrideHandler);
 
   const subcommands = [
+    makeScanCommand(),
+    makeScansCommand(),
+    makeStatusCommand(),
+    makeResultsCommand(),
+    makeCancelCommand(),
+    makeDoctorCommand(),
+    makeEngineCommand(),
     makeInitCommand(),
     makePlanCommand(),
     makeShowCommand(),
     makeFixCommand(),
     makeVerifyCommand(),
-    makeEngineCommand(),
   ];
 
   for (const cmd of subcommands) {

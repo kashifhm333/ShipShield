@@ -48,10 +48,10 @@ webhooksRouter.post('/github', async (req: Request, res: Response, next: NextFun
       });
     }
 
-    // HMAC-SHA256 signature verification
-    const rawBody = Buffer.isBuffer(req.body)
+    // HMAC-SHA256 signature verification using original raw request bytes
+    const rawBody: Buffer = (req as any).rawBody || (Buffer.isBuffer(req.body)
       ? req.body
-      : Buffer.from(JSON.stringify(req.body || {}));
+      : Buffer.from(JSON.stringify(req.body || {})));
 
     const isValid = verifyGitHubSignature(rawBody, signature, config.githubWebhookSecret);
     if (!isValid) {

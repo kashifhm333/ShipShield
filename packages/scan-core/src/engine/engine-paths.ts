@@ -8,6 +8,7 @@ export interface EnginePaths {
   pidPath: string;
   logPath: string;
   metadataPath: string;
+  dbPath: string;
 }
 
 export function getEnginePaths(customSocketPath?: string): EnginePaths {
@@ -32,5 +33,6 @@ export function getEnginePaths(customSocketPath?: string): EnginePaths {
     pidPath: path.join(dir, 'engine.pid'),
     logPath: path.join(dir, 'engine.log'),
     metadataPath: path.join(dir, 'engine.json'),
+    dbPath: path.join(dir, 'shipshield.db'),
   };
 }

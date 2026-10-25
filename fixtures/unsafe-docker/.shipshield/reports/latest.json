@@ -1,63 +1,116 @@
 {
   "schema_version": "1.0",
-  "tool": { "name": "shipshield", "version": "1.0.0" },
+  "tool": {
+    "name": "shipshield",
+    "version": "1.0.0"
+  },
   "scan": {
-    "id": "scan_unsafe_docker_test_001",
-    "started_at": "2026-10-24T12:00:00.000Z",
-    "completed_at": "2026-10-24T12:00:05.000Z",
-    "scope": { "kind": "full", "root": "." },
+    "id": "scan_mvnhk6v598f01d9d31fbd095",
+    "started_at": "2026-10-25T07:08:00.065Z",
+    "completed_at": "2026-10-25T07:08:01.429Z",
+    "scope": {
+      "kind": "full",
+      "root": "/home/kashifhm333/Desktop/Project/ShipShield/fixtures/unsafe-docker"
+    },
     "execution_status": "completed",
     "policy_outcome": "policy_failed"
   },
-  "project": { "name": "unsafe-docker" },
+  "project": {
+    "name": "unsafe-docker"
+  },
   "scanners": [
     {
       "id": "containers",
       "status": "completed",
       "engine": "trivy",
-      "duration_ms": 120,
-      "finding_count": 1,
+      "engine_version": "Version: 0.76.1",
+      "duration_ms": 1363,
+      "finding_count": 2,
       "error_message": null
     }
   ],
   "summary": {
-    "findings_total": 1,
-    "by_severity": { "critical": 0, "high": 1, "medium": 0, "low": 0, "info": 0 },
+    "findings_total": 2,
+    "by_severity": {
+      "critical": 0,
+      "high": 1,
+      "medium": 0,
+      "low": 1,
+      "info": 0
+    },
     "policy_violations": 1
   },
   "findings": [
     {
-      "id": "SS-CON-8Y3K2B",
-      "fingerprint": "sha256:1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b",
+      "id": "SS-CON-6F72C315",
+      "fingerprint": "sha256:6f72c315a27fb77e896be64f8c357ad2f1fce8cc3165ab20f33d9ad79c870d83",
       "type": "container-misconfiguration",
       "category": "containers",
       "scanner": "trivy",
-      "rule_id": "DS002",
-      "title": "Container Image Runs as Root User",
-      "description": "Dockerfile does not specify non-root USER",
+      "rule_id": "DS-0002",
+      "title": "Image user should not be 'root'",
+      "description": "Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.",
       "severity": "high",
       "severity_original": "HIGH",
       "confidence": "high",
-      "location": { "path": "Dockerfile" },
-      "evidence": { "redacted": true, "summary": "No USER instruction" },
+      "location": {
+        "path": "Dockerfile"
+      },
+      "evidence": {
+        "redacted": true,
+        "summary": "Specify at least 1 USER command in Dockerfile with non-root user as argument"
+      },
       "remediation": {
-        "summary": "Add USER 10001:10001 instruction",
-        "fix_available": true,
-        "fix_strategy": "dockerfile-non-root"
+        "summary": "Add 'USER <non root user name>' line to the Dockerfile",
+        "fix_available": false,
+        "fix_strategy": null
       },
       "status": "new",
-      "references": []
+      "references": [
+        "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/",
+        "https://avd.aquasec.com/misconfig/ds-0002"
+      ]
+    },
+    {
+      "id": "SS-CON-6D58CB90",
+      "fingerprint": "sha256:6d58cb901a5827285af75624eb7ae2744bb65d1db37547de136094d1d61b23fc",
+      "type": "container-misconfiguration",
+      "category": "containers",
+      "scanner": "trivy",
+      "rule_id": "DS-0026",
+      "title": "No HEALTHCHECK defined",
+      "description": "You should add HEALTHCHECK instruction in your docker container images to perform the health check on running containers.",
+      "severity": "low",
+      "severity_original": "LOW",
+      "confidence": "high",
+      "location": {
+        "path": "Dockerfile"
+      },
+      "evidence": {
+        "redacted": true,
+        "summary": "Add HEALTHCHECK instruction in your Dockerfile"
+      },
+      "remediation": {
+        "summary": "Add HEALTHCHECK instruction in Dockerfile",
+        "fix_available": false,
+        "fix_strategy": null
+      },
+      "status": "new",
+      "references": [
+        "https://blog.aquasec.com/docker-security-best-practices",
+        "https://avd.aquasec.com/misconfig/ds-0026"
+      ]
     }
   ],
   "policy": {
     "passed": false,
-    "rules_evaluated": 1,
+    "rules_evaluated": 2,
     "violations": [
       {
-        "rule_id": "DS002",
-        "finding_id": "SS-CON-8Y3K2B",
-        "finding_fingerprint": "sha256:1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b",
-        "message": "Root container"
+        "rule_id": "DS-0002",
+        "finding_id": "SS-CON-6F72C315",
+        "finding_fingerprint": "sha256:6f72c315a27fb77e896be64f8c357ad2f1fce8cc3165ab20f33d9ad79c870d83",
+        "message": "Severity \"high\" violates policy (fail_on: [critical, high]): Image user should not be 'root'"
       }
     ]
   },

@@ -26,9 +26,9 @@ function verifyWorkerSignature(rawBody: Buffer, signatureHeader: string | undefi
 // POST /api/v1/internal/scans/:id/complete
 internalRouter.post('/scans/:id/complete', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const rawBody = Buffer.isBuffer(req.body)
+    const rawBody: Buffer = (req as any).rawBody || (Buffer.isBuffer(req.body)
       ? req.body
-      : Buffer.from(JSON.stringify(req.body || {}));
+      : Buffer.from(JSON.stringify(req.body || {})));
 
     const sig = req.header('X-Worker-Signature');
     const isMockOrDev = config.nodeEnv === 'development' || config.nodeEnv === 'test';

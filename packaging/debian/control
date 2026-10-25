@@ -1,0 +1,16 @@
+Source: shipshield
+Section: utils
+Priority: optional
+Maintainer: ShipShield Team <maintainers@shipshield.dev>
+Build-Depends: debhelper-compat (= 13), nodejs (>= 20.11.0), npm
+Standards-Version: 4.6.2
+Homepage: https://github.com/kashifhm333/ShipShield
+
+Package: shipshield
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, nodejs (>= 20.11.0), git
+Recommends: gitleaks, trivy, checkov
+Description: Production-grade local-first DevSecOps security gate platform
+ ShipShield provides a developer-first security gate and local-first background
+ engine that detects secrets, vulnerable dependencies, container
+ misconfigurations, and infrastructure-as-code risks before they ship.

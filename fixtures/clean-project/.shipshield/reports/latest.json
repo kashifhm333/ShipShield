@@ -5,47 +5,210 @@
     "version": "1.0.0"
   },
   "scan": {
-    "id": "scan_mvng6rzu1ac753cd594f99d0",
-    "started_at": "2026-10-25T06:29:34.650Z",
-    "completed_at": "2026-10-25T06:29:34.725Z",
+    "id": "scan_mvnhj38l038940a47f935231",
+    "started_at": "2026-10-25T07:07:08.709Z",
+    "completed_at": "2026-10-25T07:07:12.394Z",
     "scope": {
       "kind": "full",
       "root": "/home/kashifhm333/Desktop/Project/ShipShield/fixtures/clean-project"
     },
-    "execution_status": "completed",
-    "policy_outcome": "passed"
+    "execution_status": "failed",
+    "policy_outcome": "incomplete"
   },
   "project": {
     "name": "clean-project"
   },
   "scanners": [
     {
+      "id": "dependencies",
+      "status": "not_applicable",
+      "engine": "trivy",
+      "duration_ms": 0,
+      "finding_count": 0,
+      "error_message": null
+    },
+    {
+      "id": "iac",
+      "status": "skipped",
+      "engine": "checkov",
+      "duration_ms": 2,
+      "finding_count": 0,
+      "error_message": "spawn checkov ENOENT"
+    },
+    {
       "id": "secrets",
       "status": "completed",
       "engine": "gitleaks",
       "engine_version": "8.18.2",
-      "duration_ms": 73,
+      "duration_ms": 78,
       "finding_count": 0,
+      "error_message": null
+    },
+    {
+      "id": "containers",
+      "status": "completed",
+      "engine": "trivy",
+      "engine_version": "Version: 0.76.1",
+      "duration_ms": 3681,
+      "finding_count": 4,
       "error_message": null
     }
   ],
   "summary": {
-    "findings_total": 0,
+    "findings_total": 4,
     "by_severity": {
       "critical": 0,
-      "high": 0,
-      "medium": 0,
-      "low": 0,
+      "high": 1,
+      "medium": 1,
+      "low": 2,
       "info": 0
     },
-    "policy_violations": 0
+    "policy_violations": 1
   },
-  "findings": [],
+  "findings": [
+    {
+      "id": "SS-CON-71092848",
+      "fingerprint": "sha256:71092848878c78841535d00ef670e8ca302dde7c3608e4830dd08020a4715b6d",
+      "type": "container-misconfiguration",
+      "category": "containers",
+      "scanner": "trivy",
+      "rule_id": "AWS-0132",
+      "title": "S3 encryption should use Customer Managed Keys",
+      "description": "Encryption using AWS keys provides protection for your S3 buckets. To gain greater control over encryption, such as key rotation, access policies, and auditability, use customer managed keys (CMKs) with SSE-KMS.\nNote that SSE-KMS is not supported for S3 server access logging destination buckets; in such cases, use SSE-S3 instead.\n",
+      "severity": "high",
+      "severity_original": "HIGH",
+      "confidence": "high",
+      "location": {
+        "path": "main.tf",
+        "start_line": 1,
+        "end_line": 3
+      },
+      "evidence": {
+        "redacted": true,
+        "summary": "Bucket does not encrypt data with a customer managed key."
+      },
+      "remediation": {
+        "summary": "Use SSE-KMS with a customer managed key (CMK)",
+        "fix_available": false,
+        "fix_strategy": null
+      },
+      "status": "new",
+      "references": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-encryption.html",
+        "https://avd.aquasec.com/misconfig/aws-0132"
+      ]
+    },
+    {
+      "id": "SS-CON-9C445606",
+      "fingerprint": "sha256:9c44560624447e2b1a0e58cd1c913ccff03ba8e3e13ed8c7e50a5e99a747f4cc",
+      "type": "container-misconfiguration",
+      "category": "containers",
+      "scanner": "trivy",
+      "rule_id": "AWS-0090",
+      "title": "S3 Data should be versioned",
+      "description": "Versioning in Amazon S3 is a means of keeping multiple variants of an object in the same bucket.\n\nYou can use the S3 Versioning feature to preserve, retrieve, and restore every version of every object stored in your buckets.\n\nWith versioning you can recover more easily from both unintended user actions and application failures.\n\nWhen you enable versioning, also keep in mind the potential costs of storing noncurrent versions of objects. To help manage those costs, consider setting up an S3 Lifecycle configuration.\n",
+      "severity": "medium",
+      "severity_original": "MEDIUM",
+      "confidence": "high",
+      "location": {
+        "path": "main.tf",
+        "start_line": 1,
+        "end_line": 3
+      },
+      "evidence": {
+        "redacted": true,
+        "summary": "Bucket does not have versioning enabled"
+      },
+      "remediation": {
+        "summary": "Enable versioning to protect against accidental/malicious removal or modification",
+        "fix_available": false,
+        "fix_strategy": null
+      },
+      "status": "new",
+      "references": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Versioning.html",
+        "https://aws.amazon.com/blogs/storage/reduce-storage-costs-with-fewer-noncurrent-versions-using-amazon-s3-lifecycle/",
+        "https://avd.aquasec.com/misconfig/aws-0090"
+      ]
+    },
+    {
+      "id": "SS-CON-6D58CB90",
+      "fingerprint": "sha256:6d58cb901a5827285af75624eb7ae2744bb65d1db37547de136094d1d61b23fc",
+      "type": "container-misconfiguration",
+      "category": "containers",
+      "scanner": "trivy",
+      "rule_id": "DS-0026",
+      "title": "No HEALTHCHECK defined",
+      "description": "You should add HEALTHCHECK instruction in your docker container images to perform the health check on running containers.",
+      "severity": "low",
+      "severity_original": "LOW",
+      "confidence": "high",
+      "location": {
+        "path": "Dockerfile"
+      },
+      "evidence": {
+        "redacted": true,
+        "summary": "Add HEALTHCHECK instruction in your Dockerfile"
+      },
+      "remediation": {
+        "summary": "Add HEALTHCHECK instruction in Dockerfile",
+        "fix_available": false,
+        "fix_strategy": null
+      },
+      "status": "new",
+      "references": [
+        "https://blog.aquasec.com/docker-security-best-practices",
+        "https://avd.aquasec.com/misconfig/ds-0026"
+      ]
+    },
+    {
+      "id": "SS-CON-C921BE25",
+      "fingerprint": "sha256:c921be258730904b93f943c936255d618c6e10c5bf9407ccbe8c844a212ac99a",
+      "type": "container-misconfiguration",
+      "category": "containers",
+      "scanner": "trivy",
+      "rule_id": "AWS-0089",
+      "title": "S3 Bucket Logging",
+      "description": "Ensures S3 bucket logging is enabled for S3 buckets",
+      "severity": "low",
+      "severity_original": "LOW",
+      "confidence": "high",
+      "location": {
+        "path": "main.tf",
+        "start_line": 1,
+        "end_line": 3
+      },
+      "evidence": {
+        "redacted": true,
+        "summary": "Bucket has logging disabled"
+      },
+      "remediation": {
+        "summary": "Add a logging block to the resource to enable access logging",
+        "fix_available": false,
+        "fix_strategy": null
+      },
+      "status": "new",
+      "references": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerLogs.html",
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html",
+        "https://avd.aquasec.com/misconfig/aws-0089"
+      ]
+    }
+  ],
   "policy": {
-    "passed": true,
-    "rules_evaluated": 0,
-    "violations": []
+    "passed": false,
+    "rules_evaluated": 4,
+    "violations": [
+      {
+        "rule_id": "AWS-0132",
+        "finding_id": "SS-CON-71092848",
+        "finding_fingerprint": "sha256:71092848878c78841535d00ef670e8ca302dde7c3608e4830dd08020a4715b6d",
+        "message": "Severity \"high\" violates policy (fail_on: [critical, high]): S3 encryption should use Customer Managed Keys"
+      }
+    ]
   },
   "warnings": [],
-  "errors": []
+  "errors": [
+    "[iac] spawn checkov ENOENT"
+  ]
 }
