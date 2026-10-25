@@ -6,6 +6,7 @@ import { makePlanCommand } from './commands/plan.command.js';
 import { makeShowCommand } from './commands/show.command.js';
 import { makeFixCommand } from './commands/fix.command.js';
 import { makeVerifyCommand } from './commands/verify.command.js';
+import { makeEngineCommand } from './commands/engine.command.js';
 
 export function createProgram(): Command {
   const program = new Command();
@@ -43,6 +44,7 @@ export function createProgram(): Command {
     makeShowCommand(),
     makeFixCommand(),
     makeVerifyCommand(),
+    makeEngineCommand(),
   ];
 
   for (const cmd of subcommands) {

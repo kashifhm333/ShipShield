@@ -17,3 +17,6 @@ export * from './remediation/handlers/terraform-s3-public-access.handler.js';
 export * from './remediation/remediation-engine.js';
 export * from './remediation/verification-engine.js';
 export * from './orchestrator/scan-orchestrator.js';
+export * from './engine/engine-paths.js';
+export * from './engine/engine-client.js';
+export * from './engine/engine-server.js';

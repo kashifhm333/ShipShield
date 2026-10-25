@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "tool": {
+    "name": "shipshield",
+    "version": "1.0.0"
+  },
+  "scan": {
+    "id": "scan_mvng6rzu1ac753cd594f99d0",
+    "started_at": "2026-10-25T06:29:34.650Z",
+    "completed_at": "2026-10-25T06:29:34.725Z",
+    "scope": {
+      "kind": "full",
+      "root": "/home/kashifhm333/Desktop/Project/ShipShield/fixtures/clean-project"
+    },
+    "execution_status": "completed",
+    "policy_outcome": "passed"
+  },
+  "project": {
+    "name": "clean-project"
+  },
+  "scanners": [
+    {
+      "id": "secrets",
+      "status": "completed",
+      "engine": "gitleaks",
+      "engine_version": "8.18.2",
+      "duration_ms": 73,
+      "finding_count": 0,
+      "error_message": null
+    }
+  ],
+  "summary": {
+    "findings_total": 0,
+    "by_severity": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0,
+      "info": 0
+    },
+    "policy_violations": 0
+  },
+  "findings": [],
+  "policy": {
+    "passed": true,
+    "rules_evaluated": 0,
+    "violations": []
+  },
+  "warnings": [],
+  "errors": []
+}

@@ -10,6 +10,7 @@ import {
   ConfigLoader,
   ScanOrchestrator,
   AdapterRegistry,
+  EngineClient,
 } from '@shipshield/scan-core';
 import {
   GitleaksAdapter,
@@ -86,6 +87,48 @@ export function makePlanCommand(): Command {
         process.exit(EXIT_CODES.CONFIGURATION_ERROR);
       }
 
+      // Check if background engine is available
+      const engineClient = new EngineClient();
+      let isEngineActive = false;
+      try {
+        isEngineActive = await engineClient.isEngineRunning(200);
+      } catch {
+        isEngineActive = false;
+      }
+
+      if (isEngineActive) {
+        if (!isJson && !globalOpts.quiet) {
+          presenter.printBanner();
+          console.error(`⚡ Connected to ShipShield Background Engine (fast mode)`);
+          console.error(`Scanning project at: ${projectRoot}`);
+        }
+
+        try {
+          const result = await engineClient.runPlan({
+            projectRoot,
+            scanners: options.scanner as ScannerId[] | undefined,
+            failOn: options.failOn as Severity[] | undefined,
+            offline: options.offline,
+            timeoutSeconds: options.timeout,
+            jobs: options.jobs,
+            writeReports: options.report !== false,
+          });
+
+          if (isJson) {
+            process.stdout.write(JSON.stringify(result.report, null, 2) + '\n');
+          } else if (!globalOpts.quiet) {
+            presenter.renderReport(result.report);
+          }
+
+          process.exit(result.exitCode);
+          return;
+        } catch (err: unknown) {
+          if (!isJson && !globalOpts.quiet) {
+            console.error(`Engine scan error: ${(err as Error).message}. Falling back to local runner...`);
+          }
+        }
+      }
+
       let config;
       try {
         config = ConfigLoader.load(projectRoot, globalOpts.config, {
@@ -104,6 +147,7 @@ export function makePlanCommand(): Command {
       if (!isJson && !globalOpts.quiet) {
         presenter.printBanner();
         console.error(`Scanning project at: ${projectRoot}`);
+        console.error(`ℹ Tip: Run 'shipshield engine start' to accelerate scans via background daemon.`);
       }
 
       try {

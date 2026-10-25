@@ -5,9 +5,9 @@
     "version": "1.0.0"
   },
   "scan": {
-    "id": "scan_mvnfhgb5f4847c9683383f8f",
-    "started_at": "2026-10-25T06:09:53.104Z",
-    "completed_at": "2026-10-25T06:09:53.202Z",
+    "id": "scan_mvng6o3q9b7e6b9620413a17",
+    "started_at": "2026-10-25T06:29:29.606Z",
+    "completed_at": "2026-10-25T06:29:29.682Z",
     "scope": {
       "kind": "full",
       "root": "/home/kashifhm333/Desktop/Project/ShipShield/fixtures/seeded-secrets"
@@ -24,7 +24,7 @@
       "status": "completed",
       "engine": "gitleaks",
       "engine_version": "8.18.2",
-      "duration_ms": 78,
+      "duration_ms": 75,
       "finding_count": 2,
       "error_message": null
     }
