@@ -1,8 +1,8 @@
 Source: shipshield
 Section: utils
 Priority: optional
-Maintainer: Kashif Memon <Kashifjaanmemon786110@gmail.com>
-XSBC-Original-Maintainer: Kashif Memon <Kashifjaanmemon786110@gmail.com>
+Maintainer: Kashif Hussain <memonkashif0001@gmail.com>
+XSBC-Original-Maintainer: Kashif Hussain <memonkashif0001@gmail.com>
 Build-Depends: debhelper-compat (= 13), nodejs (>= 18.19.0)
 Standards-Version: 4.6.2
 Homepage: https://github.com/kashifhm333/ShipShield

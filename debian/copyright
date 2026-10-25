@@ -1,14 +1,14 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: shipshield
-Upstream-Contact: Kashif Memon <Kashifjaanmemon786110@gmail.com>
+Upstream-Contact: Kashif Hussain <memonkashif0001@gmail.com>
 Source: https://github.com/kashifhm333/ShipShield
 
 Files: *
-Copyright: 2026 Kashif Memon and ShipShield Contributors
+Copyright: 2026 Kashif Hussain and ShipShield Contributors
 License: Apache-2.0
 
 Files: debian/*
-Copyright: 2026 Kashif Memon <Kashifjaanmemon786110@gmail.com>
+Copyright: 2026 Kashif Hussain <memonkashif0001@gmail.com>
 License: Apache-2.0
 
 License: Apache-2.0

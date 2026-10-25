@@ -126,7 +126,7 @@ Version: ${CHANGELOG_FULL_VER}
 Section: utils
 Priority: optional
 Architecture: all
-Maintainer: Kashif Memon <Kashifjaanmemon786110@gmail.com>
+Maintainer: Kashif Hussain <memonkashif0001@gmail.com>
 Depends: nodejs (>= 18.19.0), git
 Recommends: gitleaks
 Suggests: trivy, checkov

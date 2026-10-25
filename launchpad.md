@@ -55,7 +55,7 @@ Before starting, it is vital to understand how Ubuntu Launchpad works:
 | **Initial Release Version** | `1.0.0-1~ubuntu24.04.1` |
 | **Upstream Version** | `1.0.0` |
 | **Package License** | Apache-2.0 |
-| **Maintainer Identity** | `Kashif Memon <Kashifjaanmemon786110@gmail.com>` |
+| **Maintainer Identity** | `Kashif Hussain <memonkashif0001@gmail.com>` |
 
 ---
 
@@ -130,7 +130,7 @@ Select:
 2. Keysize: `4096`
 3. Expiration: `0` (does not expire) or your preference
 4. Real name: `Kashif Memon`
-5. Email address: `Kashifjaanmemon786110@gmail.com` *(must match your Launchpad email!)*
+5. Email address: `memonkashif0001@gmail.com` *(must match your Launchpad email!)*
 6. Set a secure passphrase when prompted.
 
 ---
@@ -238,8 +238,8 @@ Launchpad strictly rejects any upload whose `.dsc` and `_source.changes` files a
 Set your maintainer identity in your current shell session:
 
 ```bash
-export DEBFULLNAME="Kashif Memon"
-export DEBEMAIL="Kashifjaanmemon786110@gmail.com"
+export DEBFULLNAME="Kashif Hussain"
+export DEBEMAIL="memonkashif0001@gmail.com"
 ```
 
 ---
