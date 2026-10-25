@@ -1,11 +1,12 @@
 import { Command } from 'commander';
-import { spawn, execSync } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   EngineClient,
   getEnginePaths,
+  ProcessRunner,
 } from '@shipshield/scan-core';
 import { EXIT_CODES } from '@shipshield/contracts';
 
@@ -42,9 +43,14 @@ export function makeEngineCommand(): Command {
       const useDocker = !!options.docker;
 
       if (useDocker) {
-        try {
-          execSync('which docker', { stdio: 'ignore' });
-        } catch {
+        const dockerCheck = await ProcessRunner.run({
+          executable: 'docker',
+          args: ['--version'],
+          cwd: process.cwd(),
+          timeoutMs: 5000,
+        });
+
+        if (dockerCheck.exitCode !== 0) {
           console.error('Error: Docker is not installed or not available on PATH.');
           process.exit(EXIT_CODES.USAGE_ERROR);
           return;
@@ -53,19 +59,36 @@ export function makeEngineCommand(): Command {
         console.log('🐳 Starting ShipShield Engine container in background...');
         try {
           // Remove any existing stopped container
-          try {
-            execSync('docker rm -f shipshield-engine', { stdio: 'ignore' });
-          } catch {
-            // Ignored
+          await ProcessRunner.run({
+            executable: 'docker',
+            args: ['rm', '-f', 'shipshield-engine'],
+            cwd: process.cwd(),
+            timeoutMs: 10000,
+          });
+
+          const runResult = await ProcessRunner.run({
+            executable: 'docker',
+            args: [
+              'run',
+              '-d',
+              '--name',
+              'shipshield-engine',
+              '-v',
+              `${paths.dir}:/root/.shipshield`,
+              '-e',
+              'SHIPSHIELD_ENGINE_MODE=docker',
+              'shipshield/engine:latest',
+            ],
+            cwd: process.cwd(),
+            timeoutMs: 30000,
+          });
+
+          if (runResult.exitCode !== 0) {
+            console.error(`Failed to start Docker engine: ${runResult.stderr || runResult.stdout}`);
+            process.exit(EXIT_CODES.INTERNAL_ERROR);
+            return;
           }
 
-          const dockerCmd = `docker run -d --name shipshield-engine \
-            -v ${paths.dir}:/root/.shipshield \
-            -v /:/host:ro \
-            -e SHIPSHIELD_ENGINE_MODE=docker \
-            shipshield/engine:latest`;
-
-          execSync(dockerCmd, { stdio: 'inherit' });
           console.log('✔ ShipShield Engine container started.');
           console.log(`  Socket: ${paths.socketPath}`);
           process.exit(EXIT_CODES.PASSED);
@@ -141,9 +164,19 @@ export function makeEngineCommand(): Command {
 
       // Also check docker container
       try {
-        const dockerPs = execSync('docker ps -q -f name=shipshield-engine', { encoding: 'utf8' }).trim();
-        if (dockerPs) {
-          execSync('docker rm -f shipshield-engine', { stdio: 'ignore' });
+        const dockerPs = await ProcessRunner.run({
+          executable: 'docker',
+          args: ['ps', '-q', '-f', 'name=shipshield-engine'],
+          cwd: process.cwd(),
+          timeoutMs: 5000,
+        });
+        if (dockerPs.exitCode === 0 && dockerPs.stdout.trim().length > 0) {
+          await ProcessRunner.run({
+            executable: 'docker',
+            args: ['rm', '-f', 'shipshield-engine'],
+            cwd: process.cwd(),
+            timeoutMs: 10000,
+          });
           stopped = true;
         }
       } catch {

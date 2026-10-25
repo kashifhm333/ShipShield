@@ -1,0 +1,27 @@
+#!/bin/sh
+set -e
+
+# ShipShield CLI launcher
+if [ -x /usr/bin/node ]; then
+  NODE_BIN="/usr/bin/node"
+elif command -v node >/dev/null 2>&1; then
+  NODE_BIN="$(command -v node)"
+else
+  echo "Error: nodejs executable not found. Please install nodejs (>= 18.19.0)." >&2
+  exit 1
+fi
+
+# Locate ShipShield library directory
+BIN_DIR="$(cd "$(dirname "$0")" && pwd)"
+PREFIX="$(cd "${BIN_DIR}/.." && pwd)"
+
+if [ -f "${PREFIX}/lib/shipshield/apps/cli/dist/index.js" ]; then
+  APP_ENTRY="${PREFIX}/lib/shipshield/apps/cli/dist/index.js"
+elif [ -f "/usr/lib/shipshield/apps/cli/dist/index.js" ]; then
+  APP_ENTRY="/usr/lib/shipshield/apps/cli/dist/index.js"
+else
+  echo "Error: ShipShield application bundle not found in ${PREFIX}/lib/shipshield or /usr/lib/shipshield" >&2
+  exit 1
+fi
+
+exec "$NODE_BIN" --no-warnings "${APP_ENTRY}" "$@"

@@ -1,0 +1,15 @@
+[Unit]
+Description=ShipShield Background Security Engine Daemon
+Documentation=https://github.com/kashifhm333/ShipShield man:shipshield(1)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/shipshield engine start --foreground
+ExecStop=/usr/bin/shipshield engine stop
+Restart=on-failure
+RestartSec=5s
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=default.target

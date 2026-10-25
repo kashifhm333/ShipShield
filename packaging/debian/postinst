@@ -1,0 +1,18 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+  configure)
+    if [ -f /usr/bin/shipshield ]; then
+      chmod 0755 /usr/bin/shipshield
+    fi
+    ;;
+  abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+  *)
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0

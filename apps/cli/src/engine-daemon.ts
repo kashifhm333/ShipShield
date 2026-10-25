@@ -6,6 +6,7 @@ import {
   TrivyContainersAdapter,
   CheckovAdapter,
 } from '@shipshield/scanner-adapters';
+import { SHIPSHIELD_VERSION } from '@shipshield/contracts';
 
 async function runDaemon(): Promise<void> {
   const paths = getEnginePaths();
@@ -20,7 +21,7 @@ async function runDaemon(): Promise<void> {
     socketPath: paths.socketPath,
     adapters,
     mode: (process.env.SHIPSHIELD_ENGINE_MODE as 'native' | 'docker') || 'native',
-    version: '1.0.0',
+    version: SHIPSHIELD_VERSION,
   });
 
   const cleanup = async () => {

@@ -14,7 +14,10 @@
     "@shipshield/contracts": "*",
     "@shipshield/scan-core": "*",
     "@shipshield/scanner-adapters": "*",
-    "commander": "^12.1.0"
+    "commander": "^15.0.0"
+  },
+  "engines": {
+    "node": ">=18.19.0"
   },
   "devDependencies": {
     "typescript": "^5.7.2"

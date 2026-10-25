@@ -7,6 +7,7 @@ import {
   ScanReport,
   ScannerId,
   SEVERITY_WEIGHT,
+  SHIPSHIELD_VERSION,
 } from '@shipshield/contracts';
 import { AdapterRegistry } from '../adapters/adapter-registry.js';
 import { ScannerRunResult } from '../adapters/adapter.interface.js';
@@ -194,7 +195,7 @@ export class ScanOrchestrator {
       schema_version: '1.0',
       tool: {
         name: 'shipshield',
-        version: '1.0.0',
+        version: SHIPSHIELD_VERSION,
       },
       scan: {
         id: scanId,

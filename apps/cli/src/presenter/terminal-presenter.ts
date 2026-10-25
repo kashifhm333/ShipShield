@@ -1,4 +1,4 @@
-import { ScanReport, Severity } from '@shipshield/contracts';
+import { ScanReport, Severity, SHIPSHIELD_VERSION } from '@shipshield/contracts';
 import { FixProposal } from '@shipshield/scan-core';
 
 export class TerminalPresenter {
@@ -61,7 +61,7 @@ export class TerminalPresenter {
   }
 
   public printBanner(): void {
-    console.error(this.bold(this.cyan('🛡️  ShipShield Security Gate v1.0.0')));
+    console.error(this.bold(this.cyan(`🛡️  ShipShield Security Gate v${SHIPSHIELD_VERSION}`)));
     console.error(this.gray('Local-first, developer-first DevSecOps gate\n'));
   }
 

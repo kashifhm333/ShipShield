@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command, CommanderError } from 'commander';
-import { EXIT_CODES } from '@shipshield/contracts';
+import { EXIT_CODES, SHIPSHIELD_VERSION } from '@shipshield/contracts';
 import { makeInitCommand } from './commands/init.command.js';
 import { makePlanCommand } from './commands/plan.command.js';
 import { makeScanCommand } from './commands/scan.command.js';
@@ -20,7 +20,7 @@ export function createProgram(): Command {
   program
     .name('shipshield')
     .description('Production-grade local-first security gate and DevSecOps platform')
-    .version('1.0.0', '-v, --version', 'Output the current version of ShipShield')
+    .version(SHIPSHIELD_VERSION, '-v, --version', 'Output the current version of ShipShield')
     .option('--project-dir <path>', 'Explicit path to project workspace directory')
     .option('--config <path>', 'Path to custom .shipshield.yaml config file')
     .option('--report-dir <path>', 'Override directory for scan reports')

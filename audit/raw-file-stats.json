@@ -1,0 +1,1409 @@
+[
+  {
+    "path": ".github/workflows/ci.yml",
+    "size_bytes": 869,
+    "line_count": 37,
+    "is_binary": false,
+    "sha256": "82b62a4f226843fd76fd5e8d42544691e3eabd9152258710b10422a6173bba24"
+  },
+  {
+    "path": ".gitignore",
+    "size_bytes": 145,
+    "line_count": 13,
+    "is_binary": false,
+    "sha256": "eafdba4a115f7d471951c1dec600ae0e5aad36ca708f449b25304c91ac5793d2"
+  },
+  {
+    "path": ".shipshield.yaml",
+    "size_bytes": 548,
+    "line_count": 34,
+    "is_binary": false,
+    "sha256": "a8cd2f9ccb6f32ca2e541bebb4bdd3e69ada3d0b5a3065a38c125ce3a6d6bac9"
+  },
+  {
+    "path": "Dockerfile",
+    "size_bytes": 3056,
+    "line_count": 90,
+    "is_binary": false,
+    "sha256": "96febf26c78102923f77bcbc24c1de50dfecfe7f0b3a5622c085cbcf07cce686"
+  },
+  {
+    "path": "apps/api/package.json",
+    "size_bytes": 621,
+    "line_count": 28,
+    "is_binary": false,
+    "sha256": "cf1b05f86e4d326318ecf91fe05bb9b316d3445f1027f6615c90b8b7e5b2b269"
+  },
+  {
+    "path": "apps/api/src/app.ts",
+    "size_bytes": 2420,
+    "line_count": 76,
+    "is_binary": false,
+    "sha256": "2f72dbd3bbc43a8d4199e8e7c116aa4f0fa1ca3c294e6cd31c75f21cb810b2df"
+  },
+  {
+    "path": "apps/api/src/config/env.ts",
+    "size_bytes": 1708,
+    "line_count": 32,
+    "is_binary": false,
+    "sha256": "2cec6cf9e18425ac0b0eba025acef533aa9b5efa28aff55be4106d7ae041a552"
+  },
+  {
+    "path": "apps/api/src/db/connection.ts",
+    "size_bytes": 410,
+    "line_count": 15,
+    "is_binary": false,
+    "sha256": "2c8f62d9a1bfb7782751af2a95e9da316df6737d8c5d5df05cf6d86e2448668e"
+  },
+  {
+    "path": "apps/api/src/db/models/audit-event.model.ts",
+    "size_bytes": 1369,
+    "line_count": 48,
+    "is_binary": false,
+    "sha256": "51554b563962b7e0a69ecb2b8d1054688a5ff6ceab9ab04f30d836acfe1ce108"
+  },
+  {
+    "path": "apps/api/src/db/models/finding.model.ts",
+    "size_bytes": 3360,
+    "line_count": 107,
+    "is_binary": false,
+    "sha256": "5c3ea7bad84b7db3ba850264df5558be7688641c49e81665d9d9b779d6d8810f"
+  },
+  {
+    "path": "apps/api/src/db/models/installation.model.ts",
+    "size_bytes": 1034,
+    "line_count": 33,
+    "is_binary": false,
+    "sha256": "82e61650e996740e0d88fcff9ee57d550999ecaa93552c1b97b2bb5b22a7b41d"
+  },
+  {
+    "path": "apps/api/src/db/models/membership.model.ts",
+    "size_bytes": 1141,
+    "line_count": 39,
+    "is_binary": false,
+    "sha256": "71cf8dab502275f07b4ef13963f95f897aacf13b0ecd422a349e7fa95d5e26ba"
+  },
+  {
+    "path": "apps/api/src/db/models/organization.model.ts",
+    "size_bytes": 1182,
+    "line_count": 44,
+    "is_binary": false,
+    "sha256": "366939335ad5fb8a571d698c947b674c6660926844fafe5c9cb7fbb175cda8ee"
+  },
+  {
+    "path": "apps/api/src/db/models/policy.model.ts",
+    "size_bytes": 1395,
+    "line_count": 44,
+    "is_binary": false,
+    "sha256": "fd51bbe0f96ee812f0bda28fb12556cda1e6e0572eb6a4062a2f4e8d6f153f09"
+  },
+  {
+    "path": "apps/api/src/db/models/repository.model.ts",
+    "size_bytes": 1441,
+    "line_count": 45,
+    "is_binary": false,
+    "sha256": "cbe07ba250cb6a73defc9bcf9b9663f488b52f05ab059e0109986479acd7c18b"
+  },
+  {
+    "path": "apps/api/src/db/models/scan-finding.model.ts",
+    "size_bytes": 892,
+    "line_count": 29,
+    "is_binary": false,
+    "sha256": "ab0c91d0c6309988f315129ad0e5b06677fd2d699e67e570e636b1d0ba2688e8"
+  },
+  {
+    "path": "apps/api/src/db/models/scan.model.ts",
+    "size_bytes": 2724,
+    "line_count": 91,
+    "is_binary": false,
+    "sha256": "9b7715268585aafc6ce0479edbdefc919e54c402cd09e6ae3ba5c568f1f4965d"
+  },
+  {
+    "path": "apps/api/src/db/models/suppression.model.ts",
+    "size_bytes": 1713,
+    "line_count": 50,
+    "is_binary": false,
+    "sha256": "7d3bbee10d3d145f3e3054dc869c14127ddabda8def13d793454b531b91af109"
+  },
+  {
+    "path": "apps/api/src/db/models/user.model.ts",
+    "size_bytes": 1044,
+    "line_count": 38,
+    "is_binary": false,
+    "sha256": "4b559bbb04ee57915424419cb75a9758ddfdd3499b4695d90e8b2e93a127fa3c"
+  },
+  {
+    "path": "apps/api/src/db/models/webhook-event.model.ts",
+    "size_bytes": 1285,
+    "line_count": 44,
+    "is_binary": false,
+    "sha256": "35c9f9ad830a52a17ef2260590df4e7db5e8af2f19993fc01b7148b46aedb76a"
+  },
+  {
+    "path": "apps/api/src/middleware/auth.middleware.ts",
+    "size_bytes": 4312,
+    "line_count": 145,
+    "is_binary": false,
+    "sha256": "94d2a55c770291eaf542a1346e15c87bc9fdc8c50ca3ef0e58aa602e435eb26a"
+  },
+  {
+    "path": "apps/api/src/middleware/error.middleware.ts",
+    "size_bytes": 1776,
+    "line_count": 73,
+    "is_binary": false,
+    "sha256": "86be9fa055a0796c726817a8d06daaff3d403daa87a970ef6fb23e914bdefad2"
+  },
+  {
+    "path": "apps/api/src/middleware/request-id.middleware.ts",
+    "size_bytes": 584,
+    "line_count": 20,
+    "is_binary": false,
+    "sha256": "6beef6e5a876f2d5d084924a9da800521ef42882aafda132fc65e2f40717976b"
+  },
+  {
+    "path": "apps/api/src/middleware/tenant.middleware.ts",
+    "size_bytes": 1087,
+    "line_count": 32,
+    "is_binary": false,
+    "sha256": "2fa277dda48d16dab413a94cd5d63981b0f2275f6784fcdc4225886c88c4da55"
+  },
+  {
+    "path": "apps/api/src/routes/findings.routes.ts",
+    "size_bytes": 2132,
+    "line_count": 71,
+    "is_binary": false,
+    "sha256": "fb640eddd623aa2bdcb8cd6b4cbc09b5c0dc9731faa1f2cb7bae6cd9cbdd7568"
+  },
+  {
+    "path": "apps/api/src/routes/health.routes.ts",
+    "size_bytes": 292,
+    "line_count": 12,
+    "is_binary": false,
+    "sha256": "6a8265805dfbbe3ffc30cfe069a9bd16f9727d80beca26891efb225c0eae7860"
+  },
+  {
+    "path": "apps/api/src/routes/internal.routes.ts",
+    "size_bytes": 2277,
+    "line_count": 72,
+    "is_binary": false,
+    "sha256": "0bc7430cb4c763821cccd1d9c4d4b405fb8a5dada73114fc96d937e0deb5e4f9"
+  },
+  {
+    "path": "apps/api/src/routes/policies.routes.ts",
+    "size_bytes": 1965,
+    "line_count": 64,
+    "is_binary": false,
+    "sha256": "7e023aac3c2eceede383f5499eb1e7f1d8fcf84f97a7ba61c6f9885a476fcc44"
+  },
+  {
+    "path": "apps/api/src/routes/repositories.routes.ts",
+    "size_bytes": 2829,
+    "line_count": 96,
+    "is_binary": false,
+    "sha256": "2f08256ecbd40ffc8da731ef5cc601b13790ab7262ba5d84108762e00fceaee5"
+  },
+  {
+    "path": "apps/api/src/routes/scans.routes.ts",
+    "size_bytes": 3078,
+    "line_count": 104,
+    "is_binary": false,
+    "sha256": "2729626764072f95a5ca7535ff1ad707faa836ff1bb07de5e2efcc88ddece351"
+  },
+  {
+    "path": "apps/api/src/routes/suppressions.routes.ts",
+    "size_bytes": 3031,
+    "line_count": 97,
+    "is_binary": false,
+    "sha256": "61b55a1b30826b50bd4312fbfb776c91b4b4beed3324c7107826318d6f132c65"
+  },
+  {
+    "path": "apps/api/src/routes/webhooks.routes.ts",
+    "size_bytes": 3249,
+    "line_count": 108,
+    "is_binary": false,
+    "sha256": "b9d827799307541c87f64427d0944a9cc83bae9e3e9c2f86b809a895ebdb6b99"
+  },
+  {
+    "path": "apps/api/src/server.ts",
+    "size_bytes": 589,
+    "line_count": 20,
+    "is_binary": false,
+    "sha256": "7080b7b1e71b6dfeafa7ffdfaca51cadc45e34c726a824d3ef9cbde33ecb6512"
+  },
+  {
+    "path": "apps/api/src/services/ingestion.service.ts",
+    "size_bytes": 3611,
+    "line_count": 110,
+    "is_binary": false,
+    "sha256": "6ee93aedba06d7c17dcd557ea2e6216934255029ef8a3e93a98bebacf47ee36c"
+  },
+  {
+    "path": "apps/api/test/api.integration.test.ts",
+    "size_bytes": 21426,
+    "line_count": 547,
+    "is_binary": false,
+    "sha256": "f05053a34308fdcd84b09e2dfa6c892d4bc43c435ca4cf86f50611f36ddbc0e6"
+  },
+  {
+    "path": "apps/api/test/error.middleware.test.ts",
+    "size_bytes": 2585,
+    "line_count": 82,
+    "is_binary": false,
+    "sha256": "e5f9440c298b847bc60136ed4bc944f2b67edd076bc6cbe5202a7cae262cc0ae"
+  },
+  {
+    "path": "apps/api/test/ingestion.service.test.ts",
+    "size_bytes": 4182,
+    "line_count": 124,
+    "is_binary": false,
+    "sha256": "49f67472d8012f5b5ff113aba995ccf6f00a7521236d0dd723414e0ec974fe5d"
+  },
+  {
+    "path": "apps/api/test/models.test.ts",
+    "size_bytes": 1985,
+    "line_count": 37,
+    "is_binary": false,
+    "sha256": "b8a5701aa9f3e9dda10262b649a32c734287086bbf24a2405e9fc631b42e6ca6"
+  },
+  {
+    "path": "apps/api/tsconfig.json",
+    "size_bytes": 275,
+    "line_count": 13,
+    "is_binary": false,
+    "sha256": "82ab73f5c278140f232edda3301327a0c8c554918330431b4970ab9e22ab3afc"
+  },
+  {
+    "path": "apps/api/tsconfig.tsbuildinfo",
+    "size_bytes": 75647,
+    "line_count": 1,
+    "is_binary": false,
+    "sha256": "38d86f986a144ed6e35adac30ad1b4cce46a83a198035084ff2cf44c191fd383"
+  },
+  {
+    "path": "apps/cli/package.json",
+    "size_bytes": 446,
+    "line_count": 22,
+    "is_binary": false,
+    "sha256": "2b436959a5b77cdcd5be005d0bee3b421e629b3b4ef5cdd3d09ebb6c84fb627d"
+  },
+  {
+    "path": "apps/cli/src/commands/cancel.command.ts",
+    "size_bytes": 1161,
+    "line_count": 34,
+    "is_binary": false,
+    "sha256": "ba11095fcbe5574b196af8ddf59d219e7907f0df89c0a85b75a15765e423eb97"
+  },
+  {
+    "path": "apps/cli/src/commands/doctor.command.ts",
+    "size_bytes": 4294,
+    "line_count": 99,
+    "is_binary": false,
+    "sha256": "9f868b0ca44ae6eb2947c55dd36746f2c6429417212636ac97321f5a25a414d8"
+  },
+  {
+    "path": "apps/cli/src/commands/engine.command.ts",
+    "size_bytes": 8567,
+    "line_count": 250,
+    "is_binary": false,
+    "sha256": "57cff5cc58be94d4ec443917355687c59e89d0a10f19ea2c9f893fa7791bb53e"
+  },
+  {
+    "path": "apps/cli/src/commands/fix.command.ts",
+    "size_bytes": 5559,
+    "line_count": 144,
+    "is_binary": false,
+    "sha256": "8f756f1918d651a9eedd3ec705a43ce37bb863122ae1ec659334ca6dcd9f9ee7"
+  },
+  {
+    "path": "apps/cli/src/commands/init.command.ts",
+    "size_bytes": 3190,
+    "line_count": 106,
+    "is_binary": false,
+    "sha256": "8a9c156546060db327d0a6c55bfa384cdc5203c11537e4aaa3b9228e08c4f502"
+  },
+  {
+    "path": "apps/cli/src/commands/plan.command.ts",
+    "size_bytes": 6704,
+    "line_count": 178,
+    "is_binary": false,
+    "sha256": "12735bb65280f0826a5b6fc4cc3c1ed7ff5e1d5f3d041f0bbc456e387e20dbe3"
+  },
+  {
+    "path": "apps/cli/src/commands/results.command.ts",
+    "size_bytes": 2942,
+    "line_count": 83,
+    "is_binary": false,
+    "sha256": "f8f5df829c40634f50127570fb0123c8a373a940fd19b3affbd436e6ea268396"
+  },
+  {
+    "path": "apps/cli/src/commands/scan.command.ts",
+    "size_bytes": 6265,
+    "line_count": 164,
+    "is_binary": false,
+    "sha256": "0183b793a6ea2a4bb91aa54707ba79dc8d357ff6b584a054526f6cec5e8a3eba"
+  },
+  {
+    "path": "apps/cli/src/commands/scans.command.ts",
+    "size_bytes": 3241,
+    "line_count": 82,
+    "is_binary": false,
+    "sha256": "a93aa3c20243fe318de53635aa1d763fb29196c3c4e422dd94ead4fc81e96720"
+  },
+  {
+    "path": "apps/cli/src/commands/show.command.ts",
+    "size_bytes": 3772,
+    "line_count": 98,
+    "is_binary": false,
+    "sha256": "53147cb48eba2557e7d3d8ed4437c7c92bf3a2c84ec2c893979f12cb550bec4d"
+  },
+  {
+    "path": "apps/cli/src/commands/status.command.ts",
+    "size_bytes": 2382,
+    "line_count": 68,
+    "is_binary": false,
+    "sha256": "d148e76f25c9ff10d007d944709696e79e5fac3cfeb3f52d142744b3617c38bb"
+  },
+  {
+    "path": "apps/cli/src/commands/verify.command.ts",
+    "size_bytes": 4569,
+    "line_count": 114,
+    "is_binary": false,
+    "sha256": "db67fb884b7c2eda7310af901f961c7b75fa12693fc8da1162bad02a56e3dade"
+  },
+  {
+    "path": "apps/cli/src/engine-daemon.ts",
+    "size_bytes": 1292,
+    "line_count": 51,
+    "is_binary": false,
+    "sha256": "d131641908f53a84d7fed01837c1e5aaaeb98b7e760f059fe7f94626de2d3ed5"
+  },
+  {
+    "path": "apps/cli/src/index.ts",
+    "size_bytes": 3083,
+    "line_count": 79,
+    "is_binary": false,
+    "sha256": "7aa882584859a097429cdecccf3f3c765596dbe0f8daddac3edf04a36db46ddc"
+  },
+  {
+    "path": "apps/cli/src/presenter/terminal-presenter.ts",
+    "size_bytes": 5823,
+    "line_count": 160,
+    "is_binary": false,
+    "sha256": "c5d40d5638f23dee2473036d0d890813ac8f9c2a2b9a4419d62be2f63af66a5c"
+  },
+  {
+    "path": "apps/cli/test/cli.e2e.test.ts",
+    "size_bytes": 22342,
+    "line_count": 701,
+    "is_binary": false,
+    "sha256": "bf938a15f23d679349431b35b239ed8680757f7ebf94c4060a8f7c7608d7548b"
+  },
+  {
+    "path": "apps/cli/tsconfig.json",
+    "size_bytes": 326,
+    "line_count": 14,
+    "is_binary": false,
+    "sha256": "e054ff0605c1ad0449e938196b5dddcc74e385a70248ff40a5e8ee4563617ba1"
+  },
+  {
+    "path": "apps/cli/tsconfig.tsbuildinfo",
+    "size_bytes": 51018,
+    "line_count": 1,
+    "is_binary": false,
+    "sha256": "64ecb4be8ba15658314dfb4aaf78660a3db66658c35c30c541920ca9919b932e"
+  },
+  {
+    "path": "apps/web/index.html",
+    "size_bytes": 619,
+    "line_count": 15,
+    "is_binary": false,
+    "sha256": "4e0283ca8cc8a50da8ca45f90676c133e4666a161d88978096069798290e478f"
+  },
+  {
+    "path": "apps/web/package.json",
+    "size_bytes": 447,
+    "line_count": 22,
+    "is_binary": false,
+    "sha256": "97335fbcf3e59a21ba54df0cfbe2af5a327fb42b6aaf61ac2a2b9fc9d4762e1d"
+  },
+  {
+    "path": "apps/web/src/App.tsx",
+    "size_bytes": 3601,
+    "line_count": 94,
+    "is_binary": false,
+    "sha256": "e69bb9423b800f58796da1478333edb99572b629be17e8a9bf59fc2a5c36d01f"
+  },
+  {
+    "path": "apps/web/src/components/FindingDrawer.tsx",
+    "size_bytes": 9386,
+    "line_count": 234,
+    "is_binary": false,
+    "sha256": "4ea3a4096fa4b3a82f08db118a27569655aec967b2a5490fdc112479f7019bee"
+  },
+  {
+    "path": "apps/web/src/components/ScanStatusBanner.tsx",
+    "size_bytes": 1847,
+    "line_count": 64,
+    "is_binary": false,
+    "sha256": "e92346c8edefa8b2f2ec49e924a42e60774ba9eda15be18de38ff56475fbdd56"
+  },
+  {
+    "path": "apps/web/src/components/SeverityBadge.tsx",
+    "size_bytes": 1640,
+    "line_count": 66,
+    "is_binary": false,
+    "sha256": "ea20e1e6333459cdb76ce959a9d80192eb8c3d1de2b511b90552c9515be7a779"
+  },
+  {
+    "path": "apps/web/src/index.css",
+    "size_bytes": 1724,
+    "line_count": 78,
+    "is_binary": false,
+    "sha256": "36425af2d9e33a33f54312c2deb3f92189c0c92902f22b25f12b2b1f8be7a272"
+  },
+  {
+    "path": "apps/web/src/main.tsx",
+    "size_bytes": 236,
+    "line_count": 10,
+    "is_binary": false,
+    "sha256": "14a10dee4aaa2130d9f57c136db7f16f95f524d60d77146b17776e91c2ab626c"
+  },
+  {
+    "path": "apps/web/src/pages/PolicySettingsPage.tsx",
+    "size_bytes": 4678,
+    "line_count": 111,
+    "is_binary": false,
+    "sha256": "500948d79aead974545af27a53d7e40cf7d12d4126d46c33173e00ebcdc7c2c1"
+  },
+  {
+    "path": "apps/web/src/pages/RepositoriesPage.tsx",
+    "size_bytes": 4411,
+    "line_count": 119,
+    "is_binary": false,
+    "sha256": "0035f0c3fe25615867cb5f0d9f0e57da79da79d727b2b0497e8e715167512555"
+  },
+  {
+    "path": "apps/web/src/pages/ScanDetailPage.tsx",
+    "size_bytes": 8399,
+    "line_count": 208,
+    "is_binary": false,
+    "sha256": "d90a8dfa5b236f5e5c92fafadf832d780053b9b723ab4bfc75b18a4cd1e2efd2"
+  },
+  {
+    "path": "apps/web/src/pages/ScanHistoryPage.tsx",
+    "size_bytes": 4903,
+    "line_count": 133,
+    "is_binary": false,
+    "sha256": "983279ab5120460ef3e06869fb4dca120dafc0af6eb2ff2bf612bf797932c213"
+  },
+  {
+    "path": "apps/web/tsconfig.json",
+    "size_bytes": 508,
+    "line_count": 20,
+    "is_binary": false,
+    "sha256": "1103540815beff5bd5ee7c657bdf30c87f5692de58bd983721bcd4f088207887"
+  },
+  {
+    "path": "apps/web/vite.config.ts",
+    "size_bytes": 228,
+    "line_count": 12,
+    "is_binary": false,
+    "sha256": "b7aa5bd0d292ba12bf6d31f646b8d49ff88c1152d6096b67c815fe1982f38470"
+  },
+  {
+    "path": "apps/worker/package.json",
+    "size_bytes": 483,
+    "line_count": 22,
+    "is_binary": false,
+    "sha256": "6dc9a6b11d23348695db2a5f888c9d0aae989d03a913c6bead6d30d091ae87e6"
+  },
+  {
+    "path": "apps/worker/src/scan-job.processor.ts",
+    "size_bytes": 2264,
+    "line_count": 84,
+    "is_binary": false,
+    "sha256": "1291cf9eda60a5a535f6b7feb6716b6eadd0b4aced410fbf12f39d78f2112312"
+  },
+  {
+    "path": "apps/worker/src/worker.ts",
+    "size_bytes": 1026,
+    "line_count": 32,
+    "is_binary": false,
+    "sha256": "555766f895635974285c6e3e8aba694efb5ccb16051db04f64e741ecd1c09d85"
+  },
+  {
+    "path": "apps/worker/src/workspace-sandbox.ts",
+    "size_bytes": 2004,
+    "line_count": 81,
+    "is_binary": false,
+    "sha256": "b50f4178798afe774ca24068070886e138db8af0ccdf10e84773514c4a8b8a71"
+  },
+  {
+    "path": "apps/worker/test/worker.test.ts",
+    "size_bytes": 4708,
+    "line_count": 137,
+    "is_binary": false,
+    "sha256": "800dc80c6673bbd8362a057e45d91d42b14912ed423ce0c8ba85afd7628224f9"
+  },
+  {
+    "path": "apps/worker/tsconfig.json",
+    "size_bytes": 326,
+    "line_count": 14,
+    "is_binary": false,
+    "sha256": "e054ff0605c1ad0449e938196b5dddcc74e385a70248ff40a5e8ee4563617ba1"
+  },
+  {
+    "path": "apps/worker/tsconfig.tsbuildinfo",
+    "size_bytes": 69511,
+    "line_count": 1,
+    "is_binary": false,
+    "sha256": "511edc9d89f454dcc8c59fcbfcffac1fc90c598a0bf38aebb038907b46033c09"
+  },
+  {
+    "path": "docker-compose.yml",
+    "size_bytes": 1616,
+    "line_count": 70,
+    "is_binary": false,
+    "sha256": "6b5b48b1a4ce198fd1d3ab39804381f60c8c431df4f30fb8683426b78328dde5"
+  },
+  {
+    "path": "docs/02-product-requirements-document.md",
+    "size_bytes": 27143,
+    "line_count": 466,
+    "is_binary": false,
+    "sha256": "a0e23bf4983a6c08fdf0d6c66d01718dbd118388c075dfbd8866cf3871cb5166"
+  },
+  {
+    "path": "docs/03-system-design-and-architecture.md",
+    "size_bytes": 36092,
+    "line_count": 777,
+    "is_binary": false,
+    "sha256": "01785db488031c1e7871a39489533208b9d8a91a6fc5bfce45b0005493fe1e8b"
+  },
+  {
+    "path": "docs/04-cli-specification.md",
+    "size_bytes": 40332,
+    "line_count": 919,
+    "is_binary": false,
+    "sha256": "6ff7652fcf756d94a7a80e89b6cc06904fdd4b6de4adc262227a0e5924817fe8"
+  },
+  {
+    "path": "docs/05-security-and-threat-model.md",
+    "size_bytes": 46652,
+    "line_count": 744,
+    "is_binary": false,
+    "sha256": "e1956f97b358039154e7861ca75602318bd4f0331e56a6ddca6395dab8518769"
+  },
+  {
+    "path": "docs/06_data_model_and_api_specification.md",
+    "size_bytes": 34854,
+    "line_count": 1084,
+    "is_binary": false,
+    "sha256": "85008f0fe045d7e96954a038820d44ad3d91efaab4cc41c2c6791a7e43956913"
+  },
+  {
+    "path": "docs/07_scanner_and_remediation_specification.md",
+    "size_bytes": 26231,
+    "line_count": 639,
+    "is_binary": false,
+    "sha256": "f8055b22ee22e32d5306cb12412da00dcc718660a7b6f700ba9b04801d3c9e0f"
+  },
+  {
+    "path": "docs/08_testing_strategy_and_quality_gates.md",
+    "size_bytes": 25232,
+    "line_count": 608,
+    "is_binary": false,
+    "sha256": "784a0bdbbef8eec7cd3325be1e7bde278f152aa9704eac77469918866c4692e6"
+  },
+  {
+    "path": "docs/09_devops_and_deployment_guide.md",
+    "size_bytes": 10170,
+    "line_count": 244,
+    "is_binary": false,
+    "sha256": "9bc9eb245a5e17cd2cbe05ac5bdb12e15b47faef4a540222fca0c07b9d2a0174"
+  },
+  {
+    "path": "docs/10_implementation_plan_and_task_breakdown.md",
+    "size_bytes": 8004,
+    "line_count": 135,
+    "is_binary": false,
+    "sha256": "2467193cc3f8ad59ebd587694394aac57293e2f7ed9ba99eae3d10c9404d19e2"
+  },
+  {
+    "path": "docs/11_llm_implementation_master_blueprint.md",
+    "size_bytes": 51827,
+    "line_count": 967,
+    "is_binary": false,
+    "sha256": "897be24f3b018af7e00320959fdfb93190831434212b9c634aff0066ad677209"
+  },
+  {
+    "path": "docs/README (2).md",
+    "size_bytes": 72913,
+    "line_count": 1968,
+    "is_binary": false,
+    "sha256": "e1a3ffb1452c7fc1569d9a085d3cde87483779a18872a0e508e69c22870e6819"
+  },
+  {
+    "path": "fixtures/clean-project/.shipshield.yaml",
+    "size_bytes": 218,
+    "line_count": 13,
+    "is_binary": false,
+    "sha256": "35c62be2a95bb55cbb8a7ec271ea56233da995d1d829c16f72586ad5f19caa78"
+  },
+  {
+    "path": "fixtures/clean-project/.shipshield/reports/latest.json",
+    "size_bytes": 7253,
+    "line_count": 214,
+    "is_binary": false,
+    "sha256": "a43d4bdfd73d030c52b3d6896a4c447401fc1dc8477ed0171b0341fe6d81f611"
+  },
+  {
+    "path": "fixtures/clean-project/.shipshield/reports/latest.md",
+    "size_bytes": 2375,
+    "line_count": 86,
+    "is_binary": false,
+    "sha256": "708525f55525a31465476047f3a70808d7bdf82e9791459d8c80ebfa46084891"
+  },
+  {
+    "path": "fixtures/clean-project/.shipshield/reports/scan-2026-10-24T16-26-11-900Z-scan_mvmm26nw2623521e110294ba.json",
+    "size_bytes": 1687,
+    "line_count": 78,
+    "is_binary": false,
+    "sha256": "86ce8fc919dd365ac47e97dde082eb979b9b9de7e0f3cb667922d688e2ecd74c"
+  },
+  {
+    "path": "fixtures/clean-project/.shipshield/reports/scan-2026-10-24T16-26-11-900Z-scan_mvmm26nw2623521e110294ba.md",
+    "size_bytes": 755,
+    "line_count": 32,
+    "is_binary": false,
+    "sha256": "8a2e8aaeae7ffb70e5a011cc235f41a205c98ab62c46cb86ddf173df23eee150"
+  },
+  {
+    "path": "fixtures/clean-project/.shipshield/reports/scan-2026-10-24T16-26-19-986Z-scan_mvmm2cwi93764165a52e81df.json",
+    "size_bytes": 1687,
+    "line_count": 78,
+    "is_binary": false,
+    "sha256": "9a0249e3f0b049b836682765967fb91079d4e20f0fce31482ddd2a21e91f1f9e"
+  },
+  {
+    "path": "fixtures/clean-project/.shipshield/reports/scan-2026-10-24T16-26-19-986Z-scan_mvmm2cwi93764165a52e81df.md",
+    "size_bytes": 755,
+    "line_count": 32,
+    "is_binary": false,
+    "sha256": "e8284f64086bc6e0e9724f9a091d1873b5069c69154a8443a368ec50cec2221f"
+  },
+  {
+    "path": "fixtures/clean-project/.shipshield/reports/scan-2026-10-24T16-56-41-926Z-scan_mvmn5epyd87fb04dd8b44648.json",
+    "size_bytes": 1687,
+    "line_count": 78,
+    "is_binary": false,
+    "sha256": "a112e45d4b9fe43799ebd4ff208e55cd046fc9d2da2eab86b2321f318c65387b"
+  },
+  {
+    "path": "fixtures/clean-project/.shipshield/reports/scan-2026-10-24T16-56-41-926Z-scan_mvmn5epyd87fb04dd8b44648.md",
+    "size_bytes": 755,
+    "line_count": 32,
+    "is_binary": false,
+    "sha256": "96f7f53ba40775a6b7d5c69585b530345064cb301bda551e8620fcc2dd63af9f"
+  },
+  {
+    "path": "fixtures/clean-project/.shipshield/reports/scan-2026-10-25T06-29-34-650Z-scan_mvng6rzu1ac753cd594f99d0.json",
+    "size_bytes": 1046,
+    "line_count": 51,
+    "is_binary": false,
+    "sha256": "3b2fe93f9c4b1b03e1073562c242acc6cb9542d544ba92342546c9cb7bb0757d"
+  },
+  {
+    "path": "fixtures/clean-project/.shipshield/reports/scan-2026-10-25T06-29-34-650Z-scan_mvng6rzu1ac753cd594f99d0.md",
+    "size_bytes": 615,
+    "line_count": 29,
+    "is_binary": false,
+    "sha256": "e10b85e600c7d4248143439bdabcaa33c8823ed3520896d94c7732c05a451cd1"
+  },
+  {
+    "path": "fixtures/clean-project/Dockerfile",
+    "size_bytes": 102,
+    "line_count": 5,
+    "is_binary": false,
+    "sha256": "75e5f832924b2adae8ab9b66122a247b26ecc2183b4ee978c1742b63a966e7fa"
+  },
+  {
+    "path": "fixtures/clean-project/main.tf",
+    "size_bytes": 319,
+    "line_count": 12,
+    "is_binary": false,
+    "sha256": "54e1acae1f7e6d5cf3f898e207775ed19998996a8671d146b89bec8c0f013ea4"
+  },
+  {
+    "path": "fixtures/clean-project/src/index.ts",
+    "size_bytes": 70,
+    "line_count": 3,
+    "is_binary": false,
+    "sha256": "9a30ac96b5d5c1b67eca69e1e2cf0798817d9578c8d7d904a81a67b983b35cba"
+  },
+  {
+    "path": "fixtures/misconfigured-terraform/.shipshield.yaml",
+    "size_bytes": 228,
+    "line_count": 13,
+    "is_binary": false,
+    "sha256": "a5c42d112b3397a38374aded3eaf16a2da4bd05209b71d49cbd513cdde4086d8"
+  },
+  {
+    "path": "fixtures/misconfigured-terraform/main.tf",
+    "size_bytes": 93,
+    "line_count": 3,
+    "is_binary": false,
+    "sha256": "6b4e65ae525ae659d965e4eb1684b316c38b07c433f90dc00a7bfc67c02cc213"
+  },
+  {
+    "path": "fixtures/seeded-secrets/.shipshield.yaml",
+    "size_bytes": 219,
+    "line_count": 13,
+    "is_binary": false,
+    "sha256": "3191062e32e2af0d89691d735d4eebefa99184a7efcb03fce63c2ef965dd106a"
+  },
+  {
+    "path": "fixtures/seeded-secrets/.shipshield/reports/latest.json",
+    "size_bytes": 3763,
+    "line_count": 125,
+    "is_binary": false,
+    "sha256": "db4471e17f615b72bda7721fa8d1199a90d6523b130f1968a3986a96648976a9"
+  },
+  {
+    "path": "fixtures/seeded-secrets/.shipshield/reports/latest.md",
+    "size_bytes": 1649,
+    "line_count": 62,
+    "is_binary": false,
+    "sha256": "7df8dff9c0b5d6b6991321a9ae9f476c4e02ff438a35e9cc160cada69b10a530"
+  },
+  {
+    "path": "fixtures/seeded-secrets/.shipshield/reports/scan-2026-10-25T06-03-24-158Z-scan_mvnf94737ebe57e7f1ed615d.json",
+    "size_bytes": 1598,
+    "line_count": 76,
+    "is_binary": false,
+    "sha256": "eaf8240dac0bacb32db1a0bccfb491226649144b222c1300493877aee1eba4fc"
+  },
+  {
+    "path": "fixtures/seeded-secrets/.shipshield/reports/scan-2026-10-25T06-03-24-158Z-scan_mvnf94737ebe57e7f1ed615d.md",
+    "size_bytes": 770,
+    "line_count": 32,
+    "is_binary": false,
+    "sha256": "5bd385748c482c4aaadf0223cc12a6885d5c8e44126b855f8d2c5b46d2633dd1"
+  },
+  {
+    "path": "fixtures/seeded-secrets/.shipshield/reports/scan-2026-10-25T06-08-44-640Z-scan_mvnffzhc5a933bef03524718.json",
+    "size_bytes": 1157,
+    "line_count": 53,
+    "is_binary": false,
+    "sha256": "cbaf032a90d97f9f6d8bda18d8c1301aafa154c351c52a6c436e917e549ee3f0"
+  },
+  {
+    "path": "fixtures/seeded-secrets/.shipshield/reports/scan-2026-10-25T06-08-44-640Z-scan_mvnffzhc5a933bef03524718.md",
+    "size_bytes": 613,
+    "line_count": 29,
+    "is_binary": false,
+    "sha256": "1aee874001371153c009d530f6e9ed238e54a55953f52aff7d8a49796ad1e4de"
+  },
+  {
+    "path": "fixtures/seeded-secrets/.shipshield/reports/scan-2026-10-25T06-09-53-104Z-scan_mvnfhgb5f4847c9683383f8f.json",
+    "size_bytes": 3763,
+    "line_count": 125,
+    "is_binary": false,
+    "sha256": "66250559b52d280e0e87f608f49ff34f43a8329d392f209a78c0655428514cf4"
+  },
+  {
+    "path": "fixtures/seeded-secrets/.shipshield/reports/scan-2026-10-25T06-09-53-104Z-scan_mvnfhgb5f4847c9683383f8f.md",
+    "size_bytes": 1649,
+    "line_count": 62,
+    "is_binary": false,
+    "sha256": "81701fee7faab34e5787e76b3fd45a007c42fa149a2176350531ed438613ff09"
+  },
+  {
+    "path": "fixtures/seeded-secrets/.shipshield/reports/scan-2026-10-25T06-29-23-894Z-scan_mvng6jp234f333bbb3ad4b7b.json",
+    "size_bytes": 3763,
+    "line_count": 125,
+    "is_binary": false,
+    "sha256": "a0a99127ecce55dd5010640a6aeec86b74f5db894ea9a2be093cb54a88331f4a"
+  },
+  {
+    "path": "fixtures/seeded-secrets/.shipshield/reports/scan-2026-10-25T06-29-23-894Z-scan_mvng6jp234f333bbb3ad4b7b.md",
+    "size_bytes": 1649,
+    "line_count": 62,
+    "is_binary": false,
+    "sha256": "2257a7e7a549dc1d96420a32e5bf4907a12ee1c712849422dd95dc2b04954032"
+  },
+  {
+    "path": "fixtures/seeded-secrets/.shipshield/reports/scan-2026-10-25T06-29-29-606Z-scan_mvng6o3q9b7e6b9620413a17.json",
+    "size_bytes": 3763,
+    "line_count": 125,
+    "is_binary": false,
+    "sha256": "35612eebc9a9e1788eb63ee9317926f6ab73fb4c026cc89c6a8068a8be128e1c"
+  },
+  {
+    "path": "fixtures/seeded-secrets/.shipshield/reports/scan-2026-10-25T06-29-29-606Z-scan_mvng6o3q9b7e6b9620413a17.md",
+    "size_bytes": 1649,
+    "line_count": 62,
+    "is_binary": false,
+    "sha256": "e1356e5421842332d28217a1de36f31d1d70a9e79919854e197511f00f8395bd"
+  },
+  {
+    "path": "fixtures/seeded-secrets/src/credentials.js",
+    "size_bytes": 244,
+    "line_count": 8,
+    "is_binary": false,
+    "sha256": "de5310a3034de1d727261a3519d04b2d30bcb2d8ef5d4b945b02446378b88e1b"
+  },
+  {
+    "path": "fixtures/unsafe-docker/.shipshield.yaml",
+    "size_bytes": 218,
+    "line_count": 13,
+    "is_binary": false,
+    "sha256": "3622896c3c39a2e62aeaa91d332bb3504d4db00ec8ea03295c3749e177cc0159"
+  },
+  {
+    "path": "fixtures/unsafe-docker/.shipshield/reports/latest.json",
+    "size_bytes": 3642,
+    "line_count": 119,
+    "is_binary": false,
+    "sha256": "2138d76d110704b48ba6f0d01c0981c1021373e8e0f54c82fb44b12c07df2d2d"
+  },
+  {
+    "path": "fixtures/unsafe-docker/Dockerfile",
+    "size_bytes": 81,
+    "line_count": 4,
+    "is_binary": false,
+    "sha256": "faf17c261becd169f6b721b6ebdb5e078c06afd0b01466038b935dc30be8de09"
+  },
+  {
+    "path": "fixtures/vulnerable-deps/.shipshield.yaml",
+    "size_bytes": 220,
+    "line_count": 13,
+    "is_binary": false,
+    "sha256": "08a2c6e63c552f4a332c7811c880c8e11ab211f1cbd35028d51535f326c55872"
+  },
+  {
+    "path": "fixtures/vulnerable-deps/package.json",
+    "size_bytes": 138,
+    "line_count": 8,
+    "is_binary": false,
+    "sha256": "6c295ca9950e0caf97bb04195d804e6090a7ace6d6c10bddd1ec1ae6b69546e8"
+  },
+  {
+    "path": "package-lock.json",
+    "size_bytes": 213593,
+    "line_count": 6226,
+    "is_binary": false,
+    "sha256": "c87bd1d9ef29d219f443b5de45e803189a2a8769b3710cd80a0e4226b9e751ad"
+  },
+  {
+    "path": "package.json",
+    "size_bytes": 1259,
+    "line_count": 48,
+    "is_binary": false,
+    "sha256": "2837e71f44418e6d44918370ba97692bf053446b497f680e6abb0fbbd979a738"
+  },
+  {
+    "path": "packages/contracts/package.json",
+    "size_bytes": 424,
+    "line_count": 23,
+    "is_binary": false,
+    "sha256": "ca4e52bd96813b01d217f707bae7b89ca0550c3b626ec963061ecfd3eb12154f"
+  },
+  {
+    "path": "packages/contracts/src/api.schema.ts",
+    "size_bytes": 2116,
+    "line_count": 76,
+    "is_binary": false,
+    "sha256": "a674bc4c8441f63815201af74493268fea755063be754ebe4c8151fd64e17a52"
+  },
+  {
+    "path": "packages/contracts/src/config.schema.ts",
+    "size_bytes": 2405,
+    "line_count": 69,
+    "is_binary": false,
+    "sha256": "7c754c02d34dd0d18ca61cc1732087faacf48f5b8180d0fdb024dd9bd91729d0"
+  },
+  {
+    "path": "packages/contracts/src/engine.schema.ts",
+    "size_bytes": 3362,
+    "line_count": 113,
+    "is_binary": false,
+    "sha256": "365656b892825daa43b5669c86e90c4384dfecf083426a6542eefe545d819a2f"
+  },
+  {
+    "path": "packages/contracts/src/enums.ts",
+    "size_bytes": 1038,
+    "line_count": 44,
+    "is_binary": false,
+    "sha256": "bee455c5fb2547dfb97e41f40b787e8567f95d661cac1ca38c8134e351264847"
+  },
+  {
+    "path": "packages/contracts/src/exit-codes.ts",
+    "size_bytes": 1045,
+    "line_count": 43,
+    "is_binary": false,
+    "sha256": "ed3c2529035547478899a28e79e1065ca08482610c1e40dc561e0fe4931016d7"
+  },
+  {
+    "path": "packages/contracts/src/finding.schema.ts",
+    "size_bytes": 1943,
+    "line_count": 61,
+    "is_binary": false,
+    "sha256": "6f1a6ecf88770a57fbfc310419ed886f45bb9f37338aa917b6ea0e3449e5dc65"
+  },
+  {
+    "path": "packages/contracts/src/index.ts",
+    "size_bytes": 239,
+    "line_count": 7,
+    "is_binary": false,
+    "sha256": "bfab8556f91a1f376b2f826b6f43854304edddba4ed1ab31f5a607b548cc98eb"
+  },
+  {
+    "path": "packages/contracts/src/report.schema.ts",
+    "size_bytes": 2801,
+    "line_count": 93,
+    "is_binary": false,
+    "sha256": "0b52420ffefe48d7229915b823804b5b2907ae146df487599a1d2b80aabf8404"
+  },
+  {
+    "path": "packages/contracts/test/schemas.test.ts",
+    "size_bytes": 7388,
+    "line_count": 234,
+    "is_binary": false,
+    "sha256": "8070a1bd2651abb8cd0d48c385ca54009b6a613ab53b5bba3d4caa02506afa61"
+  },
+  {
+    "path": "packages/contracts/tsconfig.json",
+    "size_bytes": 165,
+    "line_count": 9,
+    "is_binary": false,
+    "sha256": "219257e08ea78d403fce51255659c7b60d2a8ad8d73c4479742d83b395f0bc25"
+  },
+  {
+    "path": "packages/contracts/tsconfig.tsbuildinfo",
+    "size_bytes": 41983,
+    "line_count": 1,
+    "is_binary": false,
+    "sha256": "77b30b1e49d911e2c87b6d95b9ca1e48bb98b83a28f1cc9563574dcfa7ec52af"
+  },
+  {
+    "path": "packages/scan-core/.shipshield/reports/latest.json",
+    "size_bytes": 1636,
+    "line_count": 77,
+    "is_binary": false,
+    "sha256": "88d5fb95a6e8dcfdd1d29bd867cd43560ef461edeaceadc5db02ae9d1a136a36"
+  },
+  {
+    "path": "packages/scan-core/.shipshield/reports/latest.md",
+    "size_bytes": 766,
+    "line_count": 32,
+    "is_binary": false,
+    "sha256": "ceafaa0b35610b4c315603c6766b7a981a8bf43ca86f96f9f0656159bb2e8212"
+  },
+  {
+    "path": "packages/scan-core/.shipshield/reports/scan-2026-10-24T16-57-38-010Z-scan_mvmn6lzvb7d22b4a9e8e44ad.json",
+    "size_bytes": 1636,
+    "line_count": 77,
+    "is_binary": false,
+    "sha256": "88d5fb95a6e8dcfdd1d29bd867cd43560ef461edeaceadc5db02ae9d1a136a36"
+  },
+  {
+    "path": "packages/scan-core/.shipshield/reports/scan-2026-10-24T16-57-38-010Z-scan_mvmn6lzvb7d22b4a9e8e44ad.md",
+    "size_bytes": 766,
+    "line_count": 32,
+    "is_binary": false,
+    "sha256": "ceafaa0b35610b4c315603c6766b7a981a8bf43ca86f96f9f0656159bb2e8212"
+  },
+  {
+    "path": "packages/scan-core/package.json",
+    "size_bytes": 531,
+    "line_count": 27,
+    "is_binary": false,
+    "sha256": "e62f915521750a4024192a652ce9a9c7f0c7f24b5f8ad88cbabdbb3aa81cbaaf"
+  },
+  {
+    "path": "packages/scan-core/src/adapters/adapter-registry.ts",
+    "size_bytes": 575,
+    "line_count": 22,
+    "is_binary": false,
+    "sha256": "85cdacf2484113d9841eb034e35c8aea0f306f28f83ed6dbd9c0865a2b29e4d3"
+  },
+  {
+    "path": "packages/scan-core/src/adapters/adapter.interface.ts",
+    "size_bytes": 805,
+    "line_count": 27,
+    "is_binary": false,
+    "sha256": "551087ec3133c06134107d2fcef03367ec1337c3e74315c8512ae48ae8b98873"
+  },
+  {
+    "path": "packages/scan-core/src/config/config-loader.ts",
+    "size_bytes": 4070,
+    "line_count": 125,
+    "is_binary": false,
+    "sha256": "b423cd5780316f60a3643dcbcd5bdbcd429dcde2aea3d7407634bf1bc4190fde"
+  },
+  {
+    "path": "packages/scan-core/src/discovery/file-walker.ts",
+    "size_bytes": 3516,
+    "line_count": 128,
+    "is_binary": false,
+    "sha256": "15aba373df84acaf0e8bf6e9d9b01fb4c2a1cb2fca135c93acfd5e379f90c691"
+  },
+  {
+    "path": "packages/scan-core/src/discovery/project-root.ts",
+    "size_bytes": 2498,
+    "line_count": 78,
+    "is_binary": false,
+    "sha256": "d4b65a9ef9a35dcb016e3ace31c203a5fe14dff52f95bf12eb1ef9f7575c9839"
+  },
+  {
+    "path": "packages/scan-core/src/engine/engine-client.ts",
+    "size_bytes": 5800,
+    "line_count": 199,
+    "is_binary": false,
+    "sha256": "76e91354e88820dc775b6e968728c68407f2317ebe448c99a6ef395dc8cf01ac"
+  },
+  {
+    "path": "packages/scan-core/src/engine/engine-paths.ts",
+    "size_bytes": 889,
+    "line_count": 38,
+    "is_binary": false,
+    "sha256": "fabf85738bc73e72326a28c8d1264f4c2b67e43cbb854a524d64548e51fee309"
+  },
+  {
+    "path": "packages/scan-core/src/engine/engine-server.ts",
+    "size_bytes": 11965,
+    "line_count": 409,
+    "is_binary": false,
+    "sha256": "0b6643011ee492f7c21fe3738a110e41be10ecc0f5bd734718730f41bd15c00a"
+  },
+  {
+    "path": "packages/scan-core/src/index.ts",
+    "size_bytes": 1108,
+    "line_count": 23,
+    "is_binary": false,
+    "sha256": "ec06e03a7895e684d62ac06f47f74c11e56f747e6a09031cb9cf8ac2daf1e221"
+  },
+  {
+    "path": "packages/scan-core/src/jobs/job-store.ts",
+    "size_bytes": 11386,
+    "line_count": 381,
+    "is_binary": false,
+    "sha256": "88e859df29f4ae313358c07f689050216d798ce3a42692b3422a3baa7ee209f9"
+  },
+  {
+    "path": "packages/scan-core/src/orchestrator/scan-orchestrator.ts",
+    "size_bytes": 8546,
+    "line_count": 265,
+    "is_binary": false,
+    "sha256": "f4e44b1178dd18c25e41706df5da55abdde47572fd0cded81fe8f0d4351f0393"
+  },
+  {
+    "path": "packages/scan-core/src/policy/policy-engine.ts",
+    "size_bytes": 3403,
+    "line_count": 123,
+    "is_binary": false,
+    "sha256": "c527630b65bdf3f5058ac14de7a31b36c1df4689f31f2d4934f09ef00f9246a1"
+  },
+  {
+    "path": "packages/scan-core/src/remediation/fix-registry.ts",
+    "size_bytes": 1511,
+    "line_count": 50,
+    "is_binary": false,
+    "sha256": "67199cb5c6006f69d17c27cc188ef9cc7d19acb95988a6422eb2677f4ed93ccd"
+  },
+  {
+    "path": "packages/scan-core/src/remediation/handlers/dockerfile-non-root.handler.ts",
+    "size_bytes": 2051,
+    "line_count": 66,
+    "is_binary": false,
+    "sha256": "d5d91f55ba0a9c017a36a405aae692df4f2ac0a0c5d34be4036cfea4f92644cd"
+  },
+  {
+    "path": "packages/scan-core/src/remediation/handlers/terraform-s3-public-access.handler.ts",
+    "size_bytes": 1985,
+    "line_count": 55,
+    "is_binary": false,
+    "sha256": "94307428086b2a551dd863bc98348e91359231b17cd1121b4e92f6f773355326"
+  },
+  {
+    "path": "packages/scan-core/src/remediation/remediation-engine.ts",
+    "size_bytes": 4663,
+    "line_count": 154,
+    "is_binary": false,
+    "sha256": "5d131699e192c544e598c71430aaf65984a7daf3eca4d269f50a4068fe2d1f9d"
+  },
+  {
+    "path": "packages/scan-core/src/remediation/verification-engine.ts",
+    "size_bytes": 2673,
+    "line_count": 75,
+    "is_binary": false,
+    "sha256": "1869d89fd9c7f4dac1546d8e6d3177ff231cda8479cd4f88758d35d89f09619c"
+  },
+  {
+    "path": "packages/scan-core/src/reports/json-writer.ts",
+    "size_bytes": 2097,
+    "line_count": 65,
+    "is_binary": false,
+    "sha256": "c53a57e8719c7a04b378261d194be0972a7ffe106462ac781c669b0fec75d213"
+  },
+  {
+    "path": "packages/scan-core/src/reports/markdown-writer.ts",
+    "size_bytes": 4596,
+    "line_count": 139,
+    "is_binary": false,
+    "sha256": "ef75e6bf3c3ab6c56fdf8df058a22026bbd7b8db343844ae1616d9c58390ba9f"
+  },
+  {
+    "path": "packages/scan-core/src/reports/report-reader.ts",
+    "size_bytes": 2109,
+    "line_count": 60,
+    "is_binary": false,
+    "sha256": "e2ecaf51c571a4df26531c350d19dd4a21fcc07b13ca0072a9583707fef235a0"
+  },
+  {
+    "path": "packages/scan-core/src/security/fingerprint.ts",
+    "size_bytes": 3668,
+    "line_count": 112,
+    "is_binary": false,
+    "sha256": "71e73405dd2adce2d20e6f028d5708f5c01e1a6106de671c14062666ead68adf"
+  },
+  {
+    "path": "packages/scan-core/src/security/path-validator.ts",
+    "size_bytes": 3760,
+    "line_count": 100,
+    "is_binary": false,
+    "sha256": "8916e7ad899e080e2f4ca0c5b38cacc59e86afcb406d4f2ff31eef4d1b19f628"
+  },
+  {
+    "path": "packages/scan-core/src/security/process-runner.ts",
+    "size_bytes": 5396,
+    "line_count": 189,
+    "is_binary": false,
+    "sha256": "6d4716ea143b58b4a3ecf86c6b9c67b30b618ed3e1e7d44a0de838880a0a4aa5"
+  },
+  {
+    "path": "packages/scan-core/src/security/redaction-engine.ts",
+    "size_bytes": 3260,
+    "line_count": 97,
+    "is_binary": false,
+    "sha256": "602b2ec7e7209eebc3f3cb4b52e1dbb88711bbb98a0149b3476e85477e80c292"
+  },
+  {
+    "path": "packages/scan-core/test/discovery-config.test.ts",
+    "size_bytes": 9678,
+    "line_count": 247,
+    "is_binary": false,
+    "sha256": "99f7dff6ed5a3bd522e139e709ebe6f356b256c4a4c6330df2390cbef4461cc6"
+  },
+  {
+    "path": "packages/scan-core/test/engine.test.ts",
+    "size_bytes": 3970,
+    "line_count": 149,
+    "is_binary": false,
+    "sha256": "3f5b6f620aa97dcf0d723e24dcda4a2357c65fd36e4360c08fda0edf5ed7f007"
+  },
+  {
+    "path": "packages/scan-core/test/job-store.test.ts",
+    "size_bytes": 3474,
+    "line_count": 109,
+    "is_binary": false,
+    "sha256": "f0eae821ef483ed45b1cca30b88062c427898ba4326b51a44583fd59ab56d858"
+  },
+  {
+    "path": "packages/scan-core/test/orchestration-remediation.test.ts",
+    "size_bytes": 15241,
+    "line_count": 425,
+    "is_binary": false,
+    "sha256": "6a80ac7c11f72fb3df759e5758758f72153e625cdcf03c11d7482e194c5e4f04"
+  },
+  {
+    "path": "packages/scan-core/test/orchestration.test.ts",
+    "size_bytes": 19571,
+    "line_count": 572,
+    "is_binary": false,
+    "sha256": "0da524e5d8707a24f2c571030c00fb96c32ad5fb27d16e90a62168c18b33de23"
+  },
+  {
+    "path": "packages/scan-core/test/reports.test.ts",
+    "size_bytes": 5610,
+    "line_count": 156,
+    "is_binary": false,
+    "sha256": "8c1bd52cc4dcd449eea0cafeb408ac5f12b80b8e2487c9e9f13a5188d822da6f"
+  },
+  {
+    "path": "packages/scan-core/test/security.test.ts",
+    "size_bytes": 7957,
+    "line_count": 208,
+    "is_binary": false,
+    "sha256": "0980fba65aa32f5e32ea538753765b498822610de60c22c159da872fc1389dcb"
+  },
+  {
+    "path": "packages/scan-core/tsconfig.json",
+    "size_bytes": 219,
+    "line_count": 12,
+    "is_binary": false,
+    "sha256": "650aeb56d65b213fc3a20f851a0bad8513f854c7c55f7de1beb4323137cbecb5"
+  },
+  {
+    "path": "packages/scan-core/tsconfig.tsbuildinfo",
+    "size_bytes": 57862,
+    "line_count": 1,
+    "is_binary": false,
+    "sha256": "a54f462cff84ebc065ba24be6dbfc153fecda21a3e70d296dab3d59b164fba57"
+  },
+  {
+    "path": "packages/scanner-adapters/package.json",
+    "size_bytes": 499,
+    "line_count": 25,
+    "is_binary": false,
+    "sha256": "56c2aba3f2e20ffc91b12adb31da90f3301ea869bb19eb77b24b4c4a8e916257"
+  },
+  {
+    "path": "packages/scanner-adapters/src/checkov/checkov.adapter.ts",
+    "size_bytes": 8484,
+    "line_count": 274,
+    "is_binary": false,
+    "sha256": "9d7cc34bc143d24c4371b6be8596b50d77770d9cf92e2789063110487a52b2f1"
+  },
+  {
+    "path": "packages/scanner-adapters/src/gitleaks/gitleaks.adapter.ts",
+    "size_bytes": 7117,
+    "line_count": 240,
+    "is_binary": false,
+    "sha256": "987581e1669d515b6670c81a175802086ffc9398b8c7336dca48d5e8cad8f57f"
+  },
+  {
+    "path": "packages/scanner-adapters/src/index.ts",
+    "size_bytes": 202,
+    "line_count": 4,
+    "is_binary": false,
+    "sha256": "284d83ac179e5d860a59a7be696abcae014dd3ffbc86a674d4f2506909b19bb2"
+  },
+  {
+    "path": "packages/scanner-adapters/src/trivy/trivy-containers.adapter.ts",
+    "size_bytes": 7463,
+    "line_count": 251,
+    "is_binary": false,
+    "sha256": "1660a289c6028dc77129b137d2f460829aeb96e435b6c31e908cac7b760569e6"
+  },
+  {
+    "path": "packages/scanner-adapters/src/trivy/trivy-dependencies.adapter.ts",
+    "size_bytes": 7436,
+    "line_count": 246,
+    "is_binary": false,
+    "sha256": "7c68c9c791cf9e4e010d907cc803888578b365f96f197fa1a08fe9047dd70a2d"
+  },
+  {
+    "path": "packages/scanner-adapters/test/adapters.test.ts",
+    "size_bytes": 27306,
+    "line_count": 780,
+    "is_binary": false,
+    "sha256": "20954fa2e94de044106f870c79674cca91634e485894ad3be7a9c972c94d599c"
+  },
+  {
+    "path": "packages/scanner-adapters/tsconfig.json",
+    "size_bytes": 251,
+    "line_count": 13,
+    "is_binary": false,
+    "sha256": "6a2ec70e1a6a64738111e236d9880d6dc0159361492e941df4a0db57b5517830"
+  },
+  {
+    "path": "packages/scanner-adapters/tsconfig.tsbuildinfo",
+    "size_bytes": 46756,
+    "line_count": 1,
+    "is_binary": false,
+    "sha256": "c065a7e1efdeea85ae26c5bb1eb517177e453304e41c266d73183642135be2de"
+  },
+  {
+    "path": "packages/schemas/package.json",
+    "size_bytes": 456,
+    "line_count": 24,
+    "is_binary": false,
+    "sha256": "2ef6c8f621fc7b8167f3fae7a6f575ec6d48497274176e6a2a12ee50b4e84e25"
+  },
+  {
+    "path": "packages/schemas/src/index.ts",
+    "size_bytes": 39,
+    "line_count": 1,
+    "is_binary": false,
+    "sha256": "6991c34bffd0521811040d34621b881744add9ba65b409cf42f22cd971db2df2"
+  },
+  {
+    "path": "packages/schemas/tsconfig.json",
+    "size_bytes": 165,
+    "line_count": 9,
+    "is_binary": false,
+    "sha256": "219257e08ea78d403fce51255659c7b60d2a8ad8d73c4479742d83b395f0bc25"
+  },
+  {
+    "path": "packages/schemas/tsconfig.tsbuildinfo",
+    "size_bytes": 41605,
+    "line_count": 1,
+    "is_binary": false,
+    "sha256": "b9eade000b51e05d176c6c3eac893b6e0640a6c589d795836214920a806c0601"
+  },
+  {
+    "path": "packaging/build-deb.sh",
+    "size_bytes": 2383,
+    "line_count": 72,
+    "is_binary": false,
+    "sha256": "00b1a6572f06b7e0802ebabbb7c71c4f638928d342565e9b5f353eef410b2ddd"
+  },
+  {
+    "path": "packaging/debian/changelog",
+    "size_bytes": 388,
+    "line_count": 8,
+    "is_binary": false,
+    "sha256": "84eca2a96b58e4ddae8cdfe47d5adf0fe9590de945e7f0e7c033366598b15363"
+  },
+  {
+    "path": "packaging/debian/control",
+    "size_bytes": 689,
+    "line_count": 16,
+    "is_binary": false,
+    "sha256": "a0b3d69df93771bc427cb38e77fb565544ad0d3787b579d4842c53531777aa7d"
+  },
+  {
+    "path": "packaging/debian/rules",
+    "size_bytes": 489,
+    "line_count": 14,
+    "is_binary": false,
+    "sha256": "a663c2e8612cfd103fe51b2a7bf95f46583c58a96bc19b2f2da5354758671c79"
+  },
+  {
+    "path": "packaging/systemd/shipshield-engine.service",
+    "size_bytes": 361,
+    "line_count": 15,
+    "is_binary": false,
+    "sha256": "c1bb1b4f46dc986b326e03d20fba41b8128b04fa3a3eda6e99e3d9142b03a6c2"
+  },
+  {
+    "path": "start_guideline.md",
+    "size_bytes": 10368,
+    "line_count": 378,
+    "is_binary": false,
+    "sha256": "14631ad9afef6b79bfc3a3b6132bf839a157c17b01a2b4d8d13db631a8c6b400"
+  },
+  {
+    "path": "tsconfig.base.json",
+    "size_bytes": 471,
+    "line_count": 19,
+    "is_binary": false,
+    "sha256": "e584b32d00b213283177646bb63c79b86ceee4eb782eca9bb1e3cb27a5a8d325"
+  },
+  {
+    "path": "tsconfig.json",
+    "size_bytes": 344,
+    "line_count": 17,
+    "is_binary": false,
+    "sha256": "a55c78474de51cb2a792c6a38ccb512d5239db163b57166fcbce08c18720cea6"
+  },
+  {
+    "path": "vitest.config.ts",
+    "size_bytes": 1564,
+    "line_count": 46,
+    "is_binary": false,
+    "sha256": "4600504787d85d704fb253936af05f0ed191153adc0d91b0aa51841c903d8ac6"
+  }
+]

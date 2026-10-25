@@ -5,3 +5,4 @@ export * from './finding.schema.js';
 export * from './report.schema.js';
 export * from './api.schema.js';
 export * from './engine.schema.js';
+export * from './version.js';

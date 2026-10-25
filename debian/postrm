@@ -1,0 +1,19 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+  purge)
+    # Packaged files under /usr/lib/shipshield are removed by dpkg.
+    # Note: User data under ~/.shipshield in user home directories is strictly
+    # preserved according to Debian Policy Manual §10.7.3 to prevent catastrophic
+    # data loss. Users can manually delete ~/.shipshield if desired.
+    ;;
+  remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+    ;;
+  *)
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0

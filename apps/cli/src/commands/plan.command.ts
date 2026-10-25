@@ -76,6 +76,7 @@ export function makePlanCommand(): Command {
           console.log(`- ${adapter.id.padEnd(14)}: ${status}`);
         }
         process.exit(EXIT_CODES.PASSED);
+        return;
       }
 
       let projectRoot: string;
@@ -85,6 +86,7 @@ export function makePlanCommand(): Command {
         const error = err as Error;
         console.error(`Configuration Error: ${error.message}`);
         process.exit(EXIT_CODES.CONFIGURATION_ERROR);
+        return;
       }
 
       // Check if background engine is available
@@ -142,6 +144,7 @@ export function makePlanCommand(): Command {
         const error = err as Error;
         console.error(`Configuration Error: ${error.message}`);
         process.exit(EXIT_CODES.CONFIGURATION_ERROR);
+        return;
       }
 
       if (!isJson && !globalOpts.quiet) {

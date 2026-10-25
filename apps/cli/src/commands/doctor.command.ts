@@ -77,11 +77,11 @@ export function makeDoctorCommand(): Command {
         } else {
           console.log(`   ✖ ${adapter.id.padEnd(14)} : MISSING (${check.error || 'not installed'})`);
           if (adapter.id === 'secrets') {
-            console.log(`     💡 Fix: Install Gitleaks (https://github.com/gitleaks/gitleaks/releases)`);
+            console.log(`     💡 Fix: Install Gitleaks (sudo apt install gitleaks or https://github.com/gitleaks/gitleaks/releases)`);
           } else if (adapter.id === 'dependencies' || adapter.id === 'containers') {
-            console.log(`     💡 Fix: Install Trivy (curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh)`);
+            console.log(`     💡 Fix: Install Trivy (https://aquasecurity.github.io/trivy/latest/getting-started/installation/)`);
           } else if (adapter.id === 'iac') {
-            console.log(`     💡 Fix: Install Checkov (pip install checkov)`);
+            console.log(`     💡 Fix: Install Checkov (pip install checkov or https://www.checkov.io/)`);
           }
         }
       }

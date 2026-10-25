@@ -48,6 +48,7 @@ export class JobStore {
   private initTables(): void {
     if (!this.db) return;
     this.db.exec(`
+      PRAGMA user_version = 1;
       CREATE TABLE IF NOT EXISTS scans (
         id TEXT PRIMARY KEY,
         project_root TEXT NOT NULL,

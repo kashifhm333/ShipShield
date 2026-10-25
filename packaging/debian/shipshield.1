@@ -1,0 +1,145 @@
+.TH SHIPSHIELD 1 "October 2026" "ShipShield 1.0.0" "User Commands"
+.SH NAME
+shipshield \- Production-grade local-first DevSecOps security gate platform
+.SH SYNOPSIS
+.B shipshield
+[\fIglobal-options\fR] \fIcommand\fR [\fIcommand-options\fR] [\fIarguments...\fR]
+.SH DESCRIPTION
+.B ShipShield
+is a developer-first security gate and local-first background engine that detects secrets, vulnerable dependencies, container misconfigurations, and infrastructure-as-code risks before they ship.
+.PP
+ShipShield orchestrates industry-standard scanning engines (Gitleaks, Trivy, Checkov) via isolated subprocess adapters, normalizes findings into a unified data contract, enforces project-specific policy thresholds, produces deterministic JSON and Markdown reports, plans unified diff remediations, and verifies efficacy via baseline deltas.
+.SH GLOBAL OPTIONS
+.TP
+.BR \-v ", " \-\-version
+Output the current installed version of ShipShield.
+.TP
+.BR \-h ", " \-\-help
+Display help for command or subcommand.
+.TP
+.BI \-\-project\-dir " path"
+Explicit path to project workspace directory (defaults to current working directory).
+.TP
+.BI \-\-config " path"
+Path to custom .shipshield.yaml configuration file.
+.TP
+.BI \-\-report\-dir " path"
+Override directory for scan reports (defaults to .shipshield/reports).
+.TP
+.BI \-\-format " format"
+Output format: \fBtext\fR or \fBjson\fR (default: text). When json is selected, stdout contains ONLY valid parseable JSON.
+.TP
+.B \-\-no\-color
+Disable colored terminal output.
+.TP
+.BR \-q ", " \-\-quiet
+Suppress non-essential progress output.
+.TP
+.BR \-v ", " \-\-verbose
+Enable verbose scanner execution logs.
+.TP
+.B \-\-debug
+Enable low-level diagnostic logs; sensitive credentials remain strictly redacted.
+.TP
+.B \-\-non\-interactive
+Disable interactive terminal confirmation prompts.
+.SH COMMANDS
+.TP
+.BI "scan [" path "]"
+Execute a security scan on a project path via the ShipShield Engine daemon. If the background engine daemon is running, jobs are processed rapidly via Unix domain socket IPC.
+.TP
+.B "scans"
+List persistent local scan history, timestamps, and job statuses from the local SQLite database.
+.TP
+.BI "status <" scan-id ">"
+Display detailed status and execution metrics for a specific scan job.
+.TP
+.BR "results [" \fIscan-id\fR "] [\-\-latest]"
+View detailed security findings and report for a completed scan.
+.TP
+.BI "cancel <" scan-id ">"
+Cancel an active or queued background scan job.
+.TP
+.B "doctor"
+Run comprehensive environment, service, scanner, and database diagnostics.
+.TP
+.BI "engine <" start|stop|status|logs ">"
+Manage the background ShipShield security engine daemon:
+.RS
+.TP
+.B engine start [\-\-foreground]
+Start the background engine daemon.
+.TP
+.B engine stop
+Stop the running engine daemon.
+.TP
+.B engine status
+Check daemon health, socket status, PID, and registered scanner availability.
+.TP
+.B engine logs [\-n lines]
+View daemon log output.
+.RE
+.TP
+.B "init [\-\-force] [\-\-minimal] [\-\-yes]"
+Initialize ShipShield configuration (.shipshield.yaml) and report directories in project root.
+.TP
+.B "plan"
+Run configured security scanners, evaluate policy, and generate reports.
+.TP
+.BR "show [" \fIscan-id-or-path\fR "] [\-\-latest] [\-\-severity \fIlevel\fR] [\-\-scanner \fIname\fR]"
+Inspect an existing ShipShield scan report without running scanners.
+.TP
+.BR "fix [" \fIfinding-ids...\fR "] [\-\-all] [\-\-dry-run] [\-\-apply] [\-\-yes]"
+Plan and apply automated remediations for supported security findings. By default, fix runs in dry-run mode and displays proposed changes as unified diffs. Passing --apply explicitly modifies files on disk after validating pre-scan cryptographic hashes.
+.TP
+.BR "verify [\-\-before " \fIbaseline\fR "] [\-\-after " \fIpost-fix\fR "]"
+Verify whether applied fixes successfully resolved previously detected findings by comparing baseline and verification scans.
+.SH EXIT CODES
+ShipShield adheres strictly to canonical deterministic exit codes:
+.TP
+.B 0
+\fBPASSED\fR: All scans completed cleanly and policy gate passed.
+.TP
+.B 1
+\fBPOLICY_FAILED\fR: Policy violations detected exceeding configured thresholds (e.g. Critical or High findings).
+.TP
+.B 2
+\fBUSAGE_ERROR\fR: Invalid command line syntax, flags, or contradictory options.
+.TP
+.B 3
+\fBCONFIGURATION_ERROR\fR: Missing or invalid .shipshield.yaml configuration.
+.TP
+.B 4
+\fBINCOMPLETE\fR: A required scanner failed, timed out, or was missing (Fail Closed).
+.TP
+.B 5
+\fBREPORT_ERROR\fR: Report file is unreadable, corrupted, or missing.
+.TP
+.B 6
+\fBFIX_ERROR\fR: Target file changed concurrently or patch application failed.
+.TP
+.B 10
+\fBINTERNAL_ERROR\fR: Unexpected runtime exception.
+.SH FILES
+.TP
+.I ~/.shipshield/
+User configuration and persistent state directory.
+.TP
+.I ~/.shipshield/engine.sock
+Unix domain socket for IPC communication with the background daemon.
+.TP
+.I ~/.shipshield/shipshield.db
+Local SQLite database storing persistent scan jobs, statuses, and events.
+.TP
+.I ~/.shipshield/engine.log
+Background engine daemon output logs.
+.TP
+.I /usr/lib/systemd/user/shipshield-engine.service
+Per-user systemd service unit.
+.SH SECURITY CONSIDERATIONS
+All child processes are spawned directly without shell interpolation. All secret matches are redacted using Shannon entropy and pattern matching before persistence or display. Subprocess execution enforces strict timeouts and bounded buffers.
+.SH AUTHORS
+ShipShield was developed by Kashif Memon and contributors.
+.SH SEE ALSO
+.BR gitleaks (1),
+.BR systemctl (1)

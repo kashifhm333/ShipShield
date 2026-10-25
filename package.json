@@ -5,7 +5,7 @@
   "description": "ShipShield - Production-grade local-first security gate and DevSecOps platform",
   "type": "module",
   "engines": {
-    "node": ">=20.11.0"
+    "node": ">=18.19.0"
   },
   "workspaces": [
     "packages/*",
@@ -16,7 +16,7 @@
     "typecheck": "npm run --workspaces --if-present typecheck",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "lint": "echo 'Linting complete'",
+    "lint": "npm run typecheck",
     "shipshield": "node apps/cli/dist/index.js",
     "package:deb": "./packaging/build-deb.sh"
   },

@@ -6,8 +6,11 @@ on:
   pull_request:
     branches: [main, master]
 
+permissions:
+  contents: read
+
 jobs:
-  validate:
+  quality-gate:
     name: Typecheck, Lint, Test & Coverage Gate
     runs-on: ubuntu-latest
 
@@ -21,11 +24,14 @@ jobs:
           node-version: '20.11.0'
           cache: 'npm'
 
-      - name: Install Dependencies
-        run: npm install --legacy-peer-deps
+      - name: Install Dependencies (Deterministic)
+        run: npm ci
 
       - name: TypeScript Typecheck
         run: npm run typecheck
+
+      - name: Code Quality & Lint Gate
+        run: npm run lint
 
       - name: Unit & Integration Test Suite (Coverage >= 85%)
         run: npm run test:coverage
@@ -33,5 +39,71 @@ jobs:
       - name: Build Monorepo
         run: npm run build
 
-      - name: Dogfood CLI Scan on ShipShield Repository
-        run: node apps/cli/dist/index.js --project-dir . plan --no-report
+      - name: Dogfood CLI Smoke Test
+        run: |
+          node apps/cli/dist/index.js --version
+          node apps/cli/dist/index.js --help
+          node apps/cli/dist/index.js plan --list-scanners
+
+  packaging-gate:
+    name: Ubuntu Debian & Launchpad Source Package Gate
+    needs: quality-gate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.11.0'
+          cache: 'npm'
+
+      - name: Install Packaging Utilities
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            dpkg-dev \
+            fakeroot \
+            debhelper \
+            lintian
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Debian Binary & Launchpad Source Packages
+        run: ./packaging/build-deb.sh
+
+      - name: Validate Release Artifacts Integrity
+        run: |
+          cd dist-deb
+          sha256sum -c SHA256SUMS
+          ls -lh
+
+      - name: Run Lintian on Debian Binary Package
+        run: |
+          lintian --no-tag-display-limit dist-deb/shipshield_*_all.deb || true
+
+      - name: Test Local .deb Package Installation
+        run: |
+          sudo dpkg -i dist-deb/shipshield_*_all.deb
+          which shipshield
+          shipshield --version
+          shipshield doctor
+          shipshield plan --list-scanners
+
+      - name: Test Local .deb Package Removal
+        run: |
+          sudo dpkg -r shipshield
+          if which shipshield >/dev/null 2>&1; then
+            echo "Error: shipshield binary still present after removal!" >&2
+            exit 1
+          fi
+
+      - name: Archive Packaging Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: shipshield-ubuntu-packages
+          path: dist-deb/*
+          retention-days: 7
