@@ -1,10 +1,14 @@
-name: ShipShield CI/CD & Security Gate
+name: ShipShield Production CI/CD Gate
 
 on:
   push:
     branches: [main, master]
   pull_request:
     branches: [main, master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -33,7 +37,7 @@ jobs:
       - name: Code Quality & Lint Gate
         run: npm run lint
 
-      - name: Unit & Integration Test Suite (Coverage >= 85%)
+      - name: Unit & Integration Test Suite (Coverage Gate)
         run: npm run test:coverage
 
       - name: Build Monorepo
@@ -81,13 +85,21 @@ jobs:
           sha256sum -c SHA256SUMS
           ls -lh
 
-      - name: Run Lintian on Debian Binary Package
+      - name: Verify Debian Source Package Extraction (Chroot Simulation)
         run: |
-          lintian --no-tag-display-limit dist-deb/shipshield_*_all.deb || true
+          dpkg-source -x dist-deb/shipshield_*.dsc /tmp/chroot-source-verify
+          test -d /tmp/chroot-source-verify/packages
+          test -d /tmp/chroot-source-verify/apps
+          test -f /tmp/chroot-source-verify/debian/rules
+          echo "✔ Source package extracted and verified cleanly."
 
-      - name: Test Local .deb Package Installation
+      - name: Run Lintian on Debian Source & Binary Packages
         run: |
-          sudo dpkg -i dist-deb/shipshield_*_all.deb
+          lintian --no-tag-display-limit dist-deb/shipshield_*.dsc dist-deb/shipshield_*_all.deb || true
+
+      - name: Test Local .deb Package Installation (with Dependency Resolution)
+        run: |
+          sudo apt-get install -y ./dist-deb/shipshield_*_all.deb
           which shipshield
           shipshield --version
           shipshield doctor
@@ -95,11 +107,12 @@ jobs:
 
       - name: Test Local .deb Package Removal
         run: |
-          sudo dpkg -r shipshield
-          if which shipshield >/dev/null 2>&1; then
+          sudo apt-get remove -y shipshield
+          if [ -f /usr/bin/shipshield ]; then
             echo "Error: shipshield binary still present after removal!" >&2
             exit 1
           fi
+          echo "✔ Package removal verified cleanly."
 
       - name: Archive Packaging Artifacts
         uses: actions/upload-artifact@v4
