@@ -41,6 +41,12 @@ if command -v apt-get >/dev/null 2>&1; then
         echo -e "${YELLOW}Installing Gitleaks secrets scanner...${NC}"
         apt-get install -y -qq gitleaks 2>/dev/null || true
     fi
+
+    # Check Trivy
+    if ! command -v trivy >/dev/null 2>&1; then
+        echo -e "${YELLOW}Installing Trivy dependency & container scanner...${NC}"
+        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin 2>/dev/null || true
+    fi
 fi
 
 # Verify Node.js
