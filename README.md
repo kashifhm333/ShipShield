@@ -23,12 +23,16 @@
    - [Option 5: Docker & Isolated Container Testing](#option-5-docker--isolated-container-testing)
 4. [Installing Security Scanner Engines](#installing-security-scanner-engines)
 5. [Verifying Your Installation (`doctor`)](#verifying-your-installation-doctor)
-6. [Daily Usage Guide](#daily-usage-guide)
-   - [6.1 Initialize a Project (`init`)](#61-initialize-a-project-init)
-   - [6.2 Run Security Scans (`scan`)](#62-run-security-scans-scan)
-   - [6.3 Inspect Scan History & Results (`scans`, `status`, `results`)](#63-inspect-scan-history--results-scans-status-results)
-   - [6.4 Automated Remediation & Dry-Run Diffs (`plan`, `fix`, `verify`)](#64-automated-remediation--dry-run-diffs-plan-fix-verify)
-   - [6.5 Background Engine Acceleration (`engine`)](#65-background-engine-acceleration-engine)
+6. [CLI Command Reference & Daily Usage Guide](#cli-command-reference--daily-usage-guide)
+   - [6.1 Quick Command Cheat Sheet](#61-quick-command-cheat-sheet)
+   - [6.2 System Health & Diagnostics (`doctor`)](#62-system-health--diagnostics-doctor)
+   - [6.3 Project Setup (`init`)](#63-project-setup-init)
+   - [6.4 Security Scans (`scan` & `plan`)](#64-security-scans-scan--plan)
+   - [6.5 Scan History & Results (`scans`, `status`, `results`, `show`)](#65-scan-history--results-scans-status-results-show)
+   - [6.6 Automated Remediation & Fixing (`fix` & `verify`)](#66-automated-remediation--fixing-fix--verify)
+   - [6.7 Background Engine Daemon (`engine`)](#67-background-engine-daemon-engine)
+   - [6.8 Canceling Active Scans (`cancel`)](#68-canceling-active-scans-cancel)
+   - [6.9 Global CLI Flags & Options](#69-global-cli-flags--options)
 7. [Configuration Reference (`.shipshield.yaml`)](#configuration-reference-shipshieldyaml)
 8. [Exit Code Contracts for CI/CD](#exit-code-contracts-for-cicd)
 9. [Architecture Overview](#architecture-overview)
@@ -292,107 +296,178 @@ shipshield plan --list-scanners
 
 ---
 
-## Daily Usage Guide
+## CLI Command Reference & Daily Usage Guide
 
-### 6.1 Initialize a Project (`init`)
+ShipShield provides a comprehensive local-first CLI for scanning, policy enforcement, background daemon acceleration, and automated vulnerability remediation.
+
+### 6.1 Quick Command Cheat Sheet
+
+| Command | Description | Example |
+| :--- | :--- | :--- |
+| **`doctor`** | Check scanner engines, environment, and database diagnostics | `shipshield doctor` |
+| **`init`** | Initialize `.shipshield.yaml` configuration in workspace | `shipshield init` |
+| **`scan`** | Run security scans (secrets, dependencies, containers, IaC) | `shipshield scan .` |
+| **`plan`** | Run scanners, evaluate policies, and generate report plan | `shipshield plan` |
+| **`scans`** | List persistent local scan history and job IDs | `shipshield scans` |
+| **`status`** | Display progress, duration, and metrics for a scan job | `shipshield status <scan-id>` |
+| **`results`**| Inspect detailed findings from the latest or specified scan | `shipshield results --latest` |
+| **`show`** | Inspect an existing report without re-running scanners | `shipshield show --dry-run` |
+| **`fix`** | Plan and apply automated code fixes / patches | `shipshield fix --all --dry-run` |
+| **`verify`** | Verify whether applied fixes resolved findings | `shipshield verify` |
+| **`engine`** | Start, stop, or view logs of the background acceleration daemon | `shipshield engine status` |
+| **`cancel`** | Abort an active or queued background scan job | `shipshield cancel <scan-id>` |
+
+---
+
+### 6.2 System Health & Diagnostics (`doctor`)
+
+Check whether runtime dependencies, background sockets, database persistence, and scanner engines are operational:
+
+```bash
+# Run comprehensive environment and scanner diagnostics
+shipshield doctor
+```
+
+---
+
+### 6.3 Project Setup (`init`)
 
 Navigate to your project repository and generate a configuration template:
 
 ```bash
 cd /path/to/your/project
-shipshield init
-```
 
-This creates a customized `.shipshield.yaml` configuration file and a local reports directory at `.shipshield/reports`.
+# Initialize .shipshield.yaml config and local report directory (.shipshield/reports)
+shipshield init
+
+# Force overwrite an existing configuration
+shipshield init --force --yes
+```
 
 ---
 
-### 6.2 Run Security Scans (`scan`)
+### 6.4 Security Scans (`scan` & `plan`)
 
-#### A. Standard Full Scan
-Scan the current workspace against all enabled scanners:
+#### A. Standard Workspace Scan
+Scan the current workspace against all active security engines:
 ```bash
 shipshield scan .
 ```
 
-#### B. Scan for Specific Risks
-Target specific categories (e.g., secrets only):
+#### B. Scan a Specific Directory
 ```bash
-shipshield scan . --scanners secrets
+shipshield scan /path/to/workspace
 ```
 
-#### C. Enforce Severity Thresholds
-Fail the command only if critical or high vulnerabilities are detected:
+#### C. Target Specific Scanners
+Run only specific security vectors:
 ```bash
-shipshield scan . --fail-on critical,high
+# Secrets scanner only (Gitleaks)
+shipshield scan . --scanner secrets
+
+# Secrets and dependency scanners
+shipshield scan . --scanner secrets dependencies
+
+# Containers (Dockerfile) and Infrastructure-as-Code (Terraform/K8s) scanners
+shipshield scan . --scanner containers iac
 ```
 
-#### D. JSON Output for CI/CD Pipelines
-Output pure JSON to `stdout` with progress and diagnostics directed to `stderr`:
+#### D. Enforce Severity Thresholds for CI/CD Gates
+Exit with a failure code only when critical or high issues are found:
+```bash
+shipshield scan . --fail-on critical high
+```
+
+#### E. Pure JSON Output (Pipelines & Scripting)
+Send structured JSON to `stdout` while keeping diagnostics on `stderr`:
 ```bash
 shipshield scan . --format json > report.json
 ```
 
-#### E. Quiet & Color-Free Modes
+#### F. Asynchronous Background Scans (`--detach`)
+Submit the scan to the background engine and receive the scan ID immediately without blocking:
 ```bash
+shipshield scan . --detach
+```
+
+#### G. Offline Mode & Performance Flags
+```bash
+# Force offline mode (skip remote CVE database fetches)
+shipshield scan . --offline
+
+# Set per-scanner execution timeout (in seconds)
+shipshield scan . --timeout 120
+
+# Suppress progress spinners and disable color codes
 shipshield scan . --quiet --no-color
+```
+
+#### H. Policy Evaluation & Planning (`plan`)
+Run scanner evaluations and generate report plans without applying fixes:
+```bash
+shipshield plan
 ```
 
 ---
 
-### 6.3 Inspect Scan History & Results (`scans`, `status`, `results`)
+### 6.5 Scan History & Results (`scans`, `status`, `results`, `show`)
 
 ShipShield automatically tracks scan history locally in SQLite:
 
 ```bash
-# List past scans for the current repository
+# 1. List past scans for the current repository
 shipshield scans
 
-# View status, duration, and metrics for a specific scan
+# 2. View execution status and timing metrics for a specific scan
 shipshield status <scan-id>
 
-# View detailed findings of a completed scan
+# 3. View detailed security findings of the most recent scan
+shipshield results --latest
+
+# 4. View findings for a specific scan by ID
 shipshield results <scan-id>
 
-# Filter findings by severity in the terminal
+# 5. Inspect an existing scan report without re-running scanners
+shipshield show --latest
+
+# 6. Filter findings by severity in terminal view
 shipshield show --severity critical
 ```
 
 ---
 
-### 6.4 Automated Remediation & Dry-Run Diffs (`plan`, `fix`, `verify`)
+### 6.6 Automated Remediation & Fixing (`fix` & `verify`)
 
-ShipShield doesn't just flag security issues—it helps remediate them:
+ShipShield provides automated remediations for supported vulnerabilities:
 
-#### Step 1: Generate a Policy Evaluation Plan
+#### Step 1: Preview Proposed Fixes (Safe Dry-Run Diff)
+Preview unified diffs of proposed code changes without altering any files:
 ```bash
-shipshield plan
+# Preview fixes for all applicable findings
+shipshield fix --all --dry-run
+
+# Preview fix for a specific finding ID
+shipshield fix SS-SEC-001234
 ```
 
-#### Step 2: Preview Remediation Diffs (Dry-Run)
-Inspect the exact code changes ShipShield proposes to make without modifying your files:
+#### Step 2: Apply Automated Fixes
 ```bash
-shipshield show --dry-run
+# Apply fixes interactively with user confirmation
+shipshield fix --all --apply
+
+# Apply fixes automatically (ideal for CI/CD or non-interactive scripts)
+shipshield fix --all --apply --yes
 ```
 
-#### Step 3: Apply Automated Fixes
-```bash
-# Apply fixes interactively:
-shipshield fix
-
-# Apply all recommended fixes automatically:
-shipshield fix --all --yes
-```
-
-#### Step 4: Verify Fix Efficacy
-Verify that applied changes resolved the vulnerabilities without introducing new policy violations:
+#### Step 3: Verify Fix Efficacy
+Run a delta verification check to confirm that the applied patches resolved the findings:
 ```bash
 shipshield verify
 ```
 
 ---
 
-### 6.5 Background Engine Acceleration (`engine`)
+### 6.7 Background Engine Daemon (`engine`)
 
 For large codebases, ShipShield includes a local daemon that runs in the background and keeps scanner environments cached for rapid, sub-second subsequent scans.
 
@@ -419,6 +494,35 @@ systemctl --user enable --now shipshield-engine.service
 # Check systemd status
 systemctl --user status shipshield-engine.service
 ```
+
+---
+
+### 6.8 Canceling Active Scans (`cancel`)
+
+Abort an active or queued background scan job:
+
+```bash
+shipshield cancel <scan-id>
+```
+
+---
+
+### 6.9 Global CLI Flags & Options
+
+These flags can be used across any ShipShield command:
+
+| Option | Description |
+| :--- | :--- |
+| **`--format <format>`** | Set output format (`text` or `json`). Default is `text`. |
+| **`--no-color`** | Strip ANSI color codes (for logs and CI/CD). |
+| **`--quiet`** | Suppress progress output and print summaries only. |
+| **`--verbose`** | Print scanner subprocess logs and detailed diagnostics. |
+| **`--debug`** | Output low-level internal engine debugging logs. |
+| **`--non-interactive`** | Disable interactive terminal prompts. |
+| **`--config <path>`** | Specify a custom path to `.shipshield.yaml`. |
+| **`--project-dir <path>`** | Explicitly declare the project root path. |
+| **`-v, --version`** | Print current ShipShield version (`1.0.0`). |
+| **`-h, --help`** | Display contextual help and flag options. |
 
 ---
 
