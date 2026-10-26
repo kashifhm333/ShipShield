@@ -4,7 +4,7 @@
   "type": "module",
   "main": "./dist/worker.js",
   "scripts": {
-    "build": "tsc -b",
+    "build": "tsc -b --force",
     "typecheck": "tsc --noEmit",
     "start": "node ./dist/worker.js"
   },
