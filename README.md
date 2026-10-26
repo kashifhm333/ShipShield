@@ -16,10 +16,11 @@
 1. [Key Features](#key-features)
 2. [Prerequisites](#prerequisites)
 3. [Installation Guidelines](#installation-guidelines)
-   - [Method 1: Instant 3-Command Install on Any Ubuntu / Debian Laptop (Recommended)](#method-1-instant-3-command-install-on-any-ubuntu--debian-laptop-recommended)
-   - [Method 2: Ubuntu / Debian via Launchpad PPA](#method-2-ubuntu--debian-via-launchpad-ppa)
-   - [Method 3: Docker & Ubuntu Container Environment](#method-3-docker--ubuntu-container-environment)
-   - [Method 4: Any OS (macOS, Linux, Windows) via Git & Node.js](#method-4-any-os-macos-linux-windows-via-git--nodejs)
+   - [Option 1: Direct 3-Command Install on Ubuntu / Debian (Recommended)](#option-1-direct-3-command-install-on-ubuntu--debian-recommended)
+   - [Option 2: 1-Line Automated Installer (`curl | bash`)](#option-2-1-line-automated-installer-curl--bash)
+   - [Option 3: Any OS (Linux, macOS, Windows) via Git & Node.js](#option-3-any-os-linux-macos-windows-via-git--nodejs)
+   - [Option 4: Ubuntu / Debian via Launchpad PPA](#option-4-ubuntu--debian-via-launchpad-ppa)
+   - [Option 5: Docker & Isolated Container Testing](#option-5-docker--isolated-container-testing)
 4. [Installing Security Scanner Engines](#installing-security-scanner-engines)
 5. [Verifying Your Installation (`doctor`)](#verifying-your-installation-doctor)
 6. [Daily Usage Guide](#daily-usage-guide)
@@ -66,12 +67,19 @@ Before installing ShipShield, make sure your machine meets the basic requirement
 
 Choose the installation method that fits your environment:
 
-### Method 1: Instant 3-Command Install on Any Ubuntu / Debian Laptop (Recommended)
+### Option 1: Direct 3-Command Install on Ubuntu / Debian (Recommended)
 
-This is the fastest, simplest method to get ShipShield working on any laptop (Ubuntu 22.04 LTS, 24.04 LTS Noble, or Debian). Zero PPA errors, zero Launchpad delays, and zero manual dependency configuration:
+This is the fastest, simplest method to get ShipShield working on any Ubuntu or Debian machine (Ubuntu 22.04 LTS, 24.04 LTS Noble, 26.04 Resolute, or Debian 12). Zero PPA errors, zero Launchpad delays, and zero manual dependency configuration:
+
+> [!TIP]
+> **Cleaning up prior broken PPA entries**: If you previously added the Launchpad PPA on an unsupported Ubuntu series and are encountering `403 Forbidden` errors during `apt update`, remove the stale source entry first:
+> ```bash
+> sudo rm -f /etc/apt/sources.list.d/kashifhm333-ubuntu-shipshield*
+> sudo apt update
+> ```
 
 ```bash
-# 1. Download the official ShipShield package
+# 1. Download the official ShipShield package from GitHub Releases
 wget https://github.com/kashifhm333/ShipShield/releases/latest/download/shipshield.deb
 
 # 2. Install via APT (automatically pulls Node.js, Gitleaks, and all runtime libraries)
@@ -92,43 +100,24 @@ shipshield --version
 
 ---
 
-### Method 2: Ubuntu / Debian via Launchpad PPA
+### Option 2: 1-Line Automated Installer (`curl | bash`)
 
-For automatic system updates through your package manager:
+For automated setups, cloud VMs, and instant single-command installation:
 
 ```bash
-# 1. Add the official ShipShield PPA
-sudo add-apt-repository ppa:kashifhm333/shipshield
-sudo apt update
-
-# 2. Install ShipShield
-sudo apt install -y shipshield
+curl -sSL https://raw.githubusercontent.com/kashifhm333/ShipShield/main/install.sh | sudo bash
 ```
-*(Note: If the PPA is pending release or private during staging, use Method 1 with the direct `.deb` package).*
+
+**What this script does automatically**:
+1. Checks for and removes any broken Launchpad PPA configuration files that block `apt update`.
+2. Validates or installs the Node.js (`>= 18.19.0`) runtime and Git.
+3. Downloads the official release binary `shipshield.deb` from GitHub Releases.
+4. Installs the payload into `/usr/lib/shipshield` and symlinks `/usr/bin/shipshield`.
+5. Executes `shipshield doctor` diagnostics automatically.
 
 ---
 
-### Method 3: Docker & Ubuntu Container Environment
-
-To run or test ShipShield inside an Ubuntu Docker container (e.g., CI/CD sandbox or containerized dev environment):
-
-```bash
-# 1. Launch an Ubuntu 24.04 container
-docker run -d --name shipshield-node ubuntu:24.04 sleep infinity
-
-# 2. Copy the .deb package into the container
-docker cp dist-deb/shipshield_1.0.0-1~ubuntu24.04.1_all.deb shipshield-node:/tmp/
-
-# 3. Install inside the container via APT
-docker exec shipshield-node bash -c "apt-get update && apt-get install -y /tmp/shipshield_1.0.0-1~ubuntu24.04.1_all.deb"
-
-# 4. Verify installation
-docker exec -it shipshield-node shipshield doctor
-```
-
----
-
-### Method 4: Any OS (macOS, Linux, Windows) via Git & Node.js
+### Option 3: Any OS (Linux, macOS, Windows) via Git & Node.js
 
 For macOS, Windows, or non-Debian Linux distributions:
 
@@ -144,12 +133,60 @@ npm ci
 npm run build
 
 # 4. Link the CLI globally so shipshield is available anywhere in your terminal
-npm link ./apps/cli
+sudo npm link ./apps/cli
 ```
 
 To verify the CLI command is active:
 ```bash
 shipshield --version
+shipshield doctor
+```
+
+---
+
+### Option 4: Ubuntu / Debian via Launchpad PPA
+
+For automatic system updates managed through Ubuntu's Canonical Launchpad packaging:
+
+```bash
+# 1. Add the official ShipShield PPA
+sudo add-apt-repository ppa:kashifhm333/shipshield
+sudo apt update
+
+# 2. Install ShipShield
+sudo apt install -y shipshield
+```
+
+> [!WARNING]
+> **Important Launchpad PPA Considerations & Troubleshooting**:
+> - **Target Distribution Series**: Launchpad PPA packages are built specifically for target Ubuntu releases (currently **Ubuntu 24.04 LTS `noble`**).
+> - **HTTP `403 Forbidden` on `InRelease`**: If your system is running Ubuntu 26.04 (`resolute`), Ubuntu 22.04 (`jammy`), or a non-LTS development release, Canonical's Launchpad server will return `403 Forbidden` on `InRelease` because binary builds for that series do not exist in the archive.
+> - **If you encounter `403 Forbidden` or `repository is not signed` errors**:
+>   Remove the PPA file to restore APT functionality:
+>   ```bash
+>   sudo rm -f /etc/apt/sources.list.d/kashifhm333-ubuntu-shipshield*
+>   sudo apt update
+>   ```
+>   Then proceed with **Option 1** or **Option 2** instead, which install the architecture-independent `.deb` bundle cleanly on any Ubuntu or Debian version.
+
+---
+
+### Option 5: Docker & Isolated Container Testing
+
+To run or test ShipShield inside an Ubuntu Docker container (e.g., CI/CD sandbox or containerized dev environment):
+
+```bash
+# 1. Launch an Ubuntu 24.04 container
+docker run -d --name shipshield-node ubuntu:24.04 sleep infinity
+
+# 2. Copy the .deb package into the container
+docker cp dist-deb/shipshield_1.0.0-1~ubuntu24.04.1_all.deb shipshield-node:/tmp/
+
+# 3. Install inside the container via APT
+docker exec shipshield-node bash -c "apt-get update && apt-get install -y /tmp/shipshield_1.0.0-1~ubuntu24.04.1_all.deb"
+
+# 4. Verify installation
+docker exec -it shipshield-node shipshield doctor
 ```
 
 ---
@@ -466,6 +503,21 @@ ShipShield/
 ---
 
 ## Troubleshooting & FAQ
+
+### Q: `apt update` fails with `403 Forbidden` on `https://ppa.launchpadcontent.net/kashifhm333/shipshield/ubuntu <suite> InRelease`
+**A**: Launchpad PPAs build binary `.deb` packages for specific target distributions (such as Ubuntu 24.04 LTS `noble`). If your machine is running Ubuntu 26.04 (`resolute`), Ubuntu 22.04 (`jammy`), or a non-LTS release, Launchpad returns `403 Forbidden` because no packages exist for that distribution codename. To fix this and restore APT functionality:
+```bash
+sudo rm -f /etc/apt/sources.list.d/kashifhm333-ubuntu-shipshield*
+sudo apt update
+```
+Then use [Option 1](#option-1-direct-3-command-install-on-ubuntu--debian-recommended) or [Option 2](#option-2-1-line-automated-installer-curl--bash) to install the universal `.deb` package directly.
+
+### Q: `wget .../releases/latest/download/shipshield.deb` returns `404 Not Found`
+**A**: Official release **v1.0.0** is now live on [GitHub Releases](https://github.com/kashifhm333/ShipShield/releases). You can download `shipshield.deb` directly:
+```bash
+wget https://github.com/kashifhm333/ShipShield/releases/latest/download/shipshield.deb
+sudo apt install -y ./shipshield.deb
+```
 
 ### Q: Why use `apt install ./shipshield_*.deb` instead of `dpkg -i`?
 **A**: When using `dpkg -i`, missing dependencies (such as `nodejs` or `gitleaks`) cause the installation to halt until you manually run `apt-get -f install`. In contrast, `apt-get install -y ./package.deb` automatically checks Ubuntu repositories and downloads all required and recommended dependencies in a single, error-free step.
