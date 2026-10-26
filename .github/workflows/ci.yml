@@ -31,6 +31,9 @@ jobs:
       - name: Install Dependencies (Deterministic)
         run: npm ci
 
+      - name: Build Monorepo (Generate Declaration Files)
+        run: npm run build
+
       - name: TypeScript Typecheck
         run: npm run typecheck
 
@@ -39,9 +42,6 @@ jobs:
 
       - name: Unit & Integration Test Suite (Coverage Gate)
         run: npm run test:coverage
-
-      - name: Build Monorepo
-        run: npm run build
 
       - name: Dogfood CLI Smoke Test
         run: |

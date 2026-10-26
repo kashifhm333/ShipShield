@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "build": "npm run --workspaces --if-present build",
-    "typecheck": "npm run --workspaces --if-present typecheck",
+    "typecheck": "npm run build && npm run --workspaces --if-present typecheck",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "lint": "npm run typecheck",

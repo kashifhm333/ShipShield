@@ -57,6 +57,8 @@ export class TerminalPresenter {
         return this.bold(this.blue('[LOW]'));
       case 'info':
         return this.gray('[INFO]');
+      default:
+        return this.gray(`[${String(severity).toUpperCase()}]`);
     }
   }
 
