@@ -51,8 +51,12 @@ if command -v apt-get >/dev/null 2>&1; then
     # Check Checkov
     if ! command -v checkov >/dev/null 2>&1; then
         echo -e "${YELLOW}Installing Checkov IaC scanner...${NC}"
-        apt-get install -y -qq python3-pip 2>/dev/null || true
-        pip3 install --break-system-packages checkov 2>/dev/null || true
+        apt-get install -y -qq python3-venv python3-pip 2>/dev/null || true
+        python3 -m venv /opt/checkov-venv 2>/dev/null || true
+        if [ -f /opt/checkov-venv/bin/pip ]; then
+            /opt/checkov-venv/bin/pip install -q checkov 2>/dev/null || true
+            ln -sf /opt/checkov-venv/bin/checkov /usr/local/bin/checkov 2>/dev/null || true
+        fi
     fi
 fi
 

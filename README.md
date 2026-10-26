@@ -236,11 +236,15 @@ ShipShield orchestrates industry-standard open-source security scanners under th
 ### 3. Checkov (Infrastructure-as-Code Scanner)
 - **Ubuntu / Debian**:
   ```bash
-  sudo apt install -y python3-pip
-  # Note: Ubuntu 24.04 enforces PEP 668 externally-managed environments:
-  pip install --break-system-packages checkov
-  # Or via pipx:
+  # Option A: Isolated system-wide environment (recommended, avoids PEP 668 Debian conflicts)
+  sudo apt update && sudo apt install -y python3-venv python3-pip
+  sudo python3 -m venv /opt/checkov-venv
+  sudo /opt/checkov-venv/bin/pip install checkov
+  sudo ln -sf /opt/checkov-venv/bin/checkov /usr/local/bin/checkov
+
+  # Option B: Via pipx
   sudo apt install -y pipx && pipx install checkov
+  sudo ln -sf ~/.local/bin/checkov /usr/local/bin/checkov
   ```
 - **macOS (Homebrew / pipx)**:
   ```bash
