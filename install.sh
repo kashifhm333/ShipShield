@@ -47,6 +47,13 @@ if command -v apt-get >/dev/null 2>&1; then
         echo -e "${YELLOW}Installing Trivy dependency & container scanner...${NC}"
         curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin 2>/dev/null || true
     fi
+
+    # Check Checkov
+    if ! command -v checkov >/dev/null 2>&1; then
+        echo -e "${YELLOW}Installing Checkov IaC scanner...${NC}"
+        apt-get install -y -qq python3-pip 2>/dev/null || true
+        pip3 install --break-system-packages checkov 2>/dev/null || true
+    fi
 fi
 
 # Verify Node.js
