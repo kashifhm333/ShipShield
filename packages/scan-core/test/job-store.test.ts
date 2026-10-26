@@ -77,8 +77,8 @@ describe('JobStore Persistence & Lifecycle Suite', () => {
   });
 
   it('gets latest job for a project', () => {
-    store.createJob({ id: 'scan_old', projectRoot: '/test/repo-latest' });
-    store.createJob({ id: 'scan_new', projectRoot: '/test/repo-latest' });
+    store.createJob({ id: 'scan_old', projectRoot: '/test/repo-latest', createdAt: new Date(Date.now() - 5000).toISOString() });
+    store.createJob({ id: 'scan_new', projectRoot: '/test/repo-latest', createdAt: new Date().toISOString() });
 
     const latest = store.getLatestJob('/test/repo-latest');
     expect(latest?.id).toBe('scan_new');

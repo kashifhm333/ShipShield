@@ -116,8 +116,9 @@ export class JobStore {
     projectName?: string | undefined;
     scanners?: ScannerId[] | undefined;
     failOn?: Severity[] | undefined;
+    createdAt?: string | undefined;
   }): JobRecord {
-    const now = new Date().toISOString();
+    const now = params.createdAt || new Date().toISOString();
     const job: JobRecord = {
       id: params.id,
       projectRoot: params.projectRoot,
@@ -250,7 +251,7 @@ export class JobStore {
         query += ' WHERE project_root = ?';
         params.push(projectRoot);
       }
-      query += ' ORDER BY created_at DESC LIMIT 1';
+      query += ' ORDER BY created_at DESC, rowid DESC LIMIT 1';
       const stmt = this.db.prepare(query);
       const row = stmt.get(...params);
       if (!row) return null;
@@ -260,8 +261,11 @@ export class JobStore {
     const all = Array.from(this.memoryJobs.values());
     const filtered = projectRoot ? all.filter((j) => j.projectRoot === projectRoot) : all;
     if (filtered.length === 0) return null;
-    filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    return filtered[0] || null;
+    filtered.sort((a, b) => {
+      const diff = new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      return diff !== 0 ? diff : 0;
+    });
+    return filtered[filtered.length - 1] && filtered[0] ? (new Date(filtered[0].createdAt).getTime() > new Date(filtered[filtered.length - 1]!.createdAt).getTime() ? filtered[0] : filtered.slice().reverse()[0]!) : filtered[0] || null;
   }
 
   public listJobs(filters?: { projectRoot?: string | undefined; status?: JobStatus | undefined; limit?: number | undefined } | undefined): JobRecord[] {
@@ -284,7 +288,7 @@ export class JobStore {
       if (conditions.length > 0) {
         query += ` WHERE ${conditions.join(' AND ')}`;
       }
-      query += ' ORDER BY created_at DESC LIMIT ?';
+      query += ' ORDER BY created_at DESC, rowid DESC LIMIT ?';
       params.push(limit);
 
       const stmt = this.db.prepare(query);
