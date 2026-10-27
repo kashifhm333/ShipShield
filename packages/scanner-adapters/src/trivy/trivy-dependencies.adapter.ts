@@ -8,6 +8,7 @@ import {
   ProcessRunner,
   RedactionEngine,
   FingerprintGenerator,
+  IntelligenceManager,
 } from '@shipshield/scan-core';
 import { NormalizedFinding, Severity } from '@shipshield/contracts';
 
@@ -79,12 +80,37 @@ export class TrivyDependenciesAdapter implements ScannerAdapter {
     if (!availability.available) {
       return {
         id: this.id,
-        status: 'skipped',
+        status: 'unavailable',
         engine: this.binaryName,
         durationMs: Date.now() - startTime,
         findingCount: 0,
         findings: [],
         errorMessage: availability.error || 'Binary not found',
+        completeness: 'indeterminate',
+        offline: Boolean(options.offline),
+        remediationGuidance: 'Install Trivy from https://aquasecurity.github.io/trivy/latest/getting-started/installation/',
+      };
+    }
+
+    const cacheDir = IntelligenceManager.getDefaultCacheDir('dependencies', options.customCacheDir);
+    const meta = IntelligenceManager.parseTrivyMetadata(cacheDir);
+    const { freshness, ageDays } = IntelligenceManager.calculateFreshness(meta.updatedAt, 7, options.maxDbAgeDays ?? 30);
+
+    // Invariant: Never report a clean assessment if required database is missing in offline mode
+    if (options.offline && (!meta.present || !meta.dbFilePresent)) {
+      return {
+        id: this.id,
+        status: 'unavailable',
+        engine: this.binaryName,
+        engineVersion: availability.version,
+        durationMs: Date.now() - startTime,
+        findingCount: 0,
+        findings: [],
+        errorMessage: 'Trivy vulnerability database is missing in local cache. Offline dependency scanning cannot proceed without cached intelligence.',
+        completeness: 'indeterminate',
+        offline: true,
+        dbStatus: 'missing',
+        remediationGuidance: 'Run "shipshield update-db --scanner dependencies" while online to download the local vulnerability database.',
       };
     }
 
@@ -103,7 +129,8 @@ export class TrivyDependenciesAdapter implements ScannerAdapter {
         '--quiet',
         '--exit-code',
         '1',
-        ...(options.offline ? ['--offline-scan', '--skip-db-update'] : []),
+        ...(options.customCacheDir ? ['--cache-dir', options.customCacheDir] : []),
+        ...(options.offline ? ['--offline-scan', '--skip-db-update', '--skip-java-db-update'] : []),
         options.workspacePath,
       ];
 
@@ -112,6 +139,7 @@ export class TrivyDependenciesAdapter implements ScannerAdapter {
         args,
         cwd: options.workspacePath,
         timeoutMs: options.timeoutSeconds * 1000,
+        offline: options.offline,
       });
 
       if (res.timedOut) {
@@ -124,6 +152,12 @@ export class TrivyDependenciesAdapter implements ScannerAdapter {
           findingCount: 0,
           findings: [],
           errorMessage: 'Trivy dependency scan timed out',
+          completeness: 'indeterminate',
+          offline: Boolean(options.offline),
+          dbVersion: meta.version || undefined,
+          dbStatus: freshness,
+          dbUpdatedAt: meta.updatedAt || undefined,
+          dbAgeDays: ageDays ?? undefined,
         };
       }
 
@@ -137,6 +171,12 @@ export class TrivyDependenciesAdapter implements ScannerAdapter {
           findingCount: 0,
           findings: [],
           errorMessage: res.stderr || `Trivy exited with code ${res.exitCode}`,
+          completeness: 'indeterminate',
+          offline: Boolean(options.offline),
+          dbVersion: meta.version || undefined,
+          dbStatus: freshness,
+          dbUpdatedAt: meta.updatedAt || undefined,
+          dbAgeDays: ageDays ?? undefined,
         };
       }
 
@@ -150,6 +190,12 @@ export class TrivyDependenciesAdapter implements ScannerAdapter {
           findingCount: 0,
           findings: [],
           errorMessage: 'Expected Trivy report file was not produced',
+          completeness: 'indeterminate',
+          offline: Boolean(options.offline),
+          dbVersion: meta.version || undefined,
+          dbStatus: freshness,
+          dbUpdatedAt: meta.updatedAt || undefined,
+          dbAgeDays: ageDays ?? undefined,
         };
       }
 
@@ -168,6 +214,12 @@ export class TrivyDependenciesAdapter implements ScannerAdapter {
           findingCount: 0,
           findings: [],
           errorMessage: `Malformed JSON from Trivy: ${error.message}`,
+          completeness: 'indeterminate',
+          offline: Boolean(options.offline),
+          dbVersion: meta.version || undefined,
+          dbStatus: freshness,
+          dbUpdatedAt: meta.updatedAt || undefined,
+          dbAgeDays: ageDays ?? undefined,
         };
       }
 
@@ -234,7 +286,18 @@ export class TrivyDependenciesAdapter implements ScannerAdapter {
         findingCount: findings.length,
         findings,
         errorMessage: null,
+        completeness: freshness === 'stale' || freshness === 'expired' ? 'partial' : 'complete',
+        offline: Boolean(options.offline),
+        dbVersion: meta.version || undefined,
+        dbStatus: freshness,
+        dbUpdatedAt: meta.updatedAt || undefined,
+        dbAgeDays: ageDays ?? undefined,
+        targetsExamined: parsed.Results ? parsed.Results.length : 0,
+        remediationGuidance: freshness === 'stale' || freshness === 'expired'
+          ? `Local vulnerability database is ${ageDays} days old (${freshness}). Run "shipshield update-db" to refresh intelligence.`
+          : null,
       };
+
     } finally {
       try {
         fs.rmSync(tmpDir, { recursive: true, force: true });

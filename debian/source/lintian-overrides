@@ -1,0 +1,3 @@
+# Pre-packaged runtime dependencies bundled for isolated self-contained deployment
+shipshield source: source-is-missing *
+shipshield source: binary-nmu-debian-revision-in-source *

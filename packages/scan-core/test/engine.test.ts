@@ -50,8 +50,11 @@ describe('Engine IPC Server & Client Suite', () => {
     adapters = new AdapterRegistry();
     adapters.register(new MockScannerAdapter());
 
+    const dbPath = path.join(tempDir, 'engine.db');
+
     server = new EngineServer({
       socketPath,
+      dbPath,
       adapters,
       mode: 'native',
       version: '1.0.0-test',

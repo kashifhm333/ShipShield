@@ -88,12 +88,15 @@ export class TrivyContainersAdapter implements ScannerAdapter {
     if (!availability.available) {
       return {
         id: this.id,
-        status: 'skipped',
+        status: 'unavailable',
         engine: this.binaryName,
         durationMs: Date.now() - startTime,
         findingCount: 0,
         findings: [],
         errorMessage: availability.error || 'Binary not found',
+        completeness: 'indeterminate',
+        offline: Boolean(options.offline),
+        remediationGuidance: 'Install Trivy from https://aquasecurity.github.io/trivy/latest/getting-started/installation/',
       };
     }
 
@@ -110,6 +113,8 @@ export class TrivyContainersAdapter implements ScannerAdapter {
         '--quiet',
         '--exit-code',
         '1',
+        ...(options.customCacheDir ? ['--cache-dir', options.customCacheDir] : []),
+        ...(options.offline ? ['--offline-scan', '--skip-db-update', '--skip-java-db-update'] : []),
         options.workspacePath,
       ];
 
@@ -118,6 +123,7 @@ export class TrivyContainersAdapter implements ScannerAdapter {
         args,
         cwd: options.workspacePath,
         timeoutMs: options.timeoutSeconds * 1000,
+        offline: options.offline,
       });
 
       if (res.timedOut) {
@@ -130,6 +136,8 @@ export class TrivyContainersAdapter implements ScannerAdapter {
           findingCount: 0,
           findings: [],
           errorMessage: 'Trivy container scan timed out',
+          completeness: 'indeterminate',
+          offline: Boolean(options.offline),
         };
       }
 
@@ -143,6 +151,8 @@ export class TrivyContainersAdapter implements ScannerAdapter {
           findingCount: 0,
           findings: [],
           errorMessage: res.stderr || `Trivy exited with code ${res.exitCode}`,
+          completeness: 'indeterminate',
+          offline: Boolean(options.offline),
         };
       }
 
@@ -156,6 +166,8 @@ export class TrivyContainersAdapter implements ScannerAdapter {
           findingCount: 0,
           findings: [],
           errorMessage: 'Expected Trivy report file was not produced',
+          completeness: 'indeterminate',
+          offline: Boolean(options.offline),
         };
       }
 
@@ -174,6 +186,8 @@ export class TrivyContainersAdapter implements ScannerAdapter {
           findingCount: 0,
           findings: [],
           errorMessage: `Malformed JSON from Trivy: ${error.message}`,
+          completeness: 'indeterminate',
+          offline: Boolean(options.offline),
         };
       }
 
@@ -239,7 +253,11 @@ export class TrivyContainersAdapter implements ScannerAdapter {
         findingCount: findings.length,
         findings,
         errorMessage: null,
+        completeness: 'complete',
+        offline: Boolean(options.offline),
+        targetsExamined: parsed.Results ? parsed.Results.length : 0,
       };
+
     } finally {
       try {
         fs.rmSync(tmpDir, { recursive: true, force: true });

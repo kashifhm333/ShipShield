@@ -6,6 +6,8 @@ export const EXIT_CODES = {
   INCOMPLETE: 4,
   REPORT_ERROR: 5,
   FIX_ERROR: 6,
+  REQUIRED_SCANNER_UNAVAILABLE: 7,
+  DATABASE_ERROR: 8,
   INTERNAL_ERROR: 10,
 } as const;
 
@@ -19,6 +21,8 @@ export type CanonicalOutcome =
   | 'usage_error'
   | 'report_error'
   | 'fix_error'
+  | 'required_scanner_unavailable'
+  | 'database_error'
   | 'internal_error';
 
 export function outcomeToExitCode(outcome: CanonicalOutcome): ExitCode {
@@ -37,6 +41,10 @@ export function outcomeToExitCode(outcome: CanonicalOutcome): ExitCode {
       return EXIT_CODES.REPORT_ERROR;
     case 'fix_error':
       return EXIT_CODES.FIX_ERROR;
+    case 'required_scanner_unavailable':
+      return EXIT_CODES.REQUIRED_SCANNER_UNAVAILABLE;
+    case 'database_error':
+      return EXIT_CODES.DATABASE_ERROR;
     case 'internal_error':
       return EXIT_CODES.INTERNAL_ERROR;
   }

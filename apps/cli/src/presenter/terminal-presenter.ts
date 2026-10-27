@@ -83,6 +83,18 @@ export class TerminalPresenter {
     console.log(`Outcome:   ${outcomeStr}`);
     console.log(`Duration:  ${new Date(report.scan.completed_at).getTime() - new Date(report.scan.started_at).getTime()}ms`);
     console.log(`Scope:     ${report.scan.scope.kind} (${report.scan.scope.root})`);
+    if (report.scan.mode) {
+      console.log(`Mode:      ${report.scan.mode === 'offline' ? this.yellow('OFFLINE') : this.blue(report.scan.mode)}`);
+    }
+    if (report.scan.completeness) {
+      const compStr =
+        report.scan.completeness === 'complete'
+          ? this.green('COMPLETE')
+          : report.scan.completeness === 'partial'
+          ? this.yellow('PARTIAL')
+          : this.red('INDETERMINATE');
+      console.log(`Integrity: ${compStr}`);
+    }
 
     console.log(this.bold('\n--- Scanner Breakdown ---'));
     for (const s of report.scanners) {
@@ -93,13 +105,36 @@ export class TerminalPresenter {
           ? this.gray('not applicable')
           : s.status === 'skipped'
           ? this.yellow('skipped')
+          : s.status === 'unavailable'
+          ? this.red('unavailable')
           : this.red(s.status);
 
+      let extraMeta = '';
+      if (s.db_status && s.db_status !== 'not_applicable') {
+        const dbColor =
+          s.db_status === 'fresh'
+            ? this.green('fresh')
+            : s.db_status === 'stale'
+            ? this.yellow('stale')
+            : this.red(s.db_status);
+        extraMeta = ` | DB: ${s.db_version || 'unknown'} (${dbColor}${s.db_age_days !== undefined ? `, ${s.db_age_days}d old` : ''})`;
+      }
+
       console.log(
-        `• ${this.bold(s.id.padEnd(14))} [${statusStr}] findings: ${s.finding_count} (${s.duration_ms}ms)`
+        `• ${this.bold(s.id.padEnd(14))} [${statusStr}] findings: ${s.finding_count} (${s.duration_ms}ms)${extraMeta}`
       );
       if (s.error_message) {
         console.log(`  ${this.red('Error:')} ${s.error_message}`);
+      }
+      if (s.remediation_guidance) {
+        console.log(`  💡 ${this.cyan(s.remediation_guidance)}`);
+      }
+    }
+
+    if (report.warnings && report.warnings.length > 0) {
+      console.log(this.bold('\n--- Warnings & Intelligence Notices ---'));
+      for (const w of report.warnings) {
+        console.log(`⚠️  ${this.yellow(w)}`);
       }
     }
 

@@ -14,7 +14,7 @@ describe('Scanner Adapters Suite', () => {
   });
 
   describe('Missing Binaries Graceful Degradation', () => {
-    it('Gitleaks adapter returns skipped when binary is absent', async () => {
+    it('Gitleaks adapter returns unavailable when binary is absent', async () => {
       const adapter = new GitleaksAdapter();
       vi.spyOn(adapter, 'checkAvailability').mockResolvedValue({
         available: false,
@@ -26,12 +26,12 @@ describe('Scanner Adapters Suite', () => {
         timeoutSeconds: 30,
       });
 
-      expect(res.status).toBe('skipped');
+      expect(res.status).toBe('unavailable');
       expect(res.findingCount).toBe(0);
       expect(res.errorMessage).toContain('Binary not found');
     });
 
-    it('Trivy dependencies adapter returns skipped when binary is absent', async () => {
+    it('Trivy dependencies adapter returns unavailable when binary is absent', async () => {
       const adapter = new TrivyDependenciesAdapter();
       vi.spyOn(adapter, 'checkAvailability').mockResolvedValue({
         available: false,
@@ -43,11 +43,11 @@ describe('Scanner Adapters Suite', () => {
         timeoutSeconds: 30,
       });
 
-      expect(res.status).toBe('skipped');
+      expect(res.status).toBe('unavailable');
       expect(res.findingCount).toBe(0);
     });
 
-    it('Trivy containers adapter returns skipped when binary is absent', async () => {
+    it('Trivy containers adapter returns unavailable when binary is absent', async () => {
       const adapter = new TrivyContainersAdapter();
       vi.spyOn(adapter, 'checkAvailability').mockResolvedValue({
         available: false,
@@ -59,11 +59,11 @@ describe('Scanner Adapters Suite', () => {
         timeoutSeconds: 30,
       });
 
-      expect(res.status).toBe('skipped');
+      expect(res.status).toBe('unavailable');
       expect(res.findingCount).toBe(0);
     });
 
-    it('Checkov adapter returns skipped when binary is absent', async () => {
+    it('Checkov adapter returns unavailable when binary is absent', async () => {
       const adapter = new CheckovAdapter();
       vi.spyOn(adapter, 'checkAvailability').mockResolvedValue({
         available: false,
@@ -75,7 +75,7 @@ describe('Scanner Adapters Suite', () => {
         timeoutSeconds: 30,
       });
 
-      expect(res.status).toBe('skipped');
+      expect(res.status).toBe('unavailable');
       expect(res.findingCount).toBe(0);
     });
   });
@@ -140,6 +140,91 @@ describe('Scanner Adapters Suite', () => {
       expect(finding.evidence.summary).not.toContain('AKIAIOSFODNN7EXAMPLE');
       expect(finding.evidence.summary).toContain('****');
       expect(() => NormalizedFindingSchema.parse(finding)).not.toThrow();
+    });
+
+    it('maps secret rules and entropy to nuanced severities and confidence levels', async () => {
+      const adapter = new GitleaksAdapter();
+      vi.spyOn(adapter, 'checkAvailability').mockResolvedValue({
+        available: true,
+        version: '8.18.2',
+      });
+
+      const multiFindings = [
+        {
+          Description: 'Slack Webhook',
+          StartLine: 1,
+          EndLine: 1,
+          Match: 'https://hooks.slack.com/services/T00/B00/XXXXX',
+          Secret: 'XXXXX',
+          File: 'slack.js',
+          Entropy: 3.8,
+          RuleID: 'slack-incoming-webhook',
+          Tags: ['key'],
+        },
+        {
+          Description: 'DB Password',
+          StartLine: 2,
+          EndLine: 2,
+          Match: 'const PWD = "password123";',
+          Secret: 'password123',
+          File: 'db.js',
+          Entropy: 2.2,
+          RuleID: 'generic-database-password',
+          Tags: ['password'],
+        },
+        {
+          Description: 'Generic Token',
+          StartLine: 3,
+          EndLine: 3,
+          Match: 'const T = "generic_token_val";',
+          Secret: 'generic_token_val',
+          File: 'gen.js',
+          Entropy: 3.2,
+          RuleID: 'generic-api-key',
+          Tags: [],
+        },
+        {
+          Description: 'Low Entropy Notice',
+          StartLine: 4,
+          EndLine: 4,
+          Match: 'const N = "test";',
+          Secret: 'test',
+          File: 'note.txt',
+          Entropy: 1.2,
+          RuleID: 'doc-note-rule',
+          Tags: [],
+        },
+      ];
+
+      vi.spyOn(ProcessRunner, 'run').mockImplementation(async (opts) => {
+        const reportIdx = opts.args.indexOf('--report-path');
+        if (reportIdx !== -1 && opts.args[reportIdx + 1]) {
+          fs.writeFileSync(opts.args[reportIdx + 1]!, JSON.stringify(multiFindings));
+        }
+        return {
+          exitCode: 1,
+          signal: null,
+          stdout: '',
+          stderr: '',
+          durationMs: 100,
+          timedOut: false,
+          bufferOverflowed: false,
+        };
+      });
+
+      const res = await adapter.scan({
+        workspacePath: '/workspace',
+        timeoutSeconds: 10,
+        scanGitHistory: true,
+        offline: true,
+      });
+
+      expect(res.status).toBe('completed');
+      expect(res.findingCount).toBe(4);
+      expect(res.findings[0]!.severity).toBe('critical');
+      expect(res.findings[1]!.severity).toBe('high');
+      expect(res.findings[2]!.severity).toBe('high');
+      expect(res.findings[3]!.severity).toBe('low');
     });
 
     it('returns failed status when JSON is corrupted', async () => {

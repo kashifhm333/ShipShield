@@ -21,3 +21,4 @@ export * from './engine/engine-paths.js';
 export * from './engine/engine-client.js';
 export * from './engine/engine-server.js';
 export * from './jobs/job-store.js';
+export * from './intelligence/index.js';

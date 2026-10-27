@@ -1,4 +1,10 @@
-import { NormalizedFinding, ScannerId, ScannerStatus } from '@shipshield/contracts';
+import {
+  NormalizedFinding,
+  ScannerId,
+  ScannerStatus,
+  Completeness,
+  DatabaseFreshness,
+} from '@shipshield/contracts';
 
 export interface ScannerRunResult {
   id: ScannerId;
@@ -9,12 +15,24 @@ export interface ScannerRunResult {
   findingCount: number;
   findings: NormalizedFinding[];
   errorMessage: string | null;
+  completeness?: Completeness | undefined;
+  offline?: boolean | undefined;
+  dbVersion?: string | undefined;
+  dbStatus?: DatabaseFreshness | undefined;
+  dbUpdatedAt?: string | undefined;
+  dbAgeDays?: number | undefined;
+  targetsExamined?: number | undefined;
+  skippedChecks?: string[] | undefined;
+  remediationGuidance?: string | null | undefined;
 }
 
 export interface ScannerAdapterOptions {
   workspacePath: string;
   timeoutSeconds: number;
-  offline?: boolean;
+  offline?: boolean | undefined;
+  maxDbAgeDays?: number | undefined;
+  customCacheDir?: string | undefined;
+  scanGitHistory?: boolean | undefined;
 }
 
 export interface ScannerAdapter {

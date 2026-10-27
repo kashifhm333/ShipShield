@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SeveritySchema } from './enums.js';
+import { SeveritySchema, ScannerIdSchema } from './enums.js';
 
 export const ProjectConfigSchema = z
   .object({
@@ -41,11 +41,30 @@ export const ProjectConfigSchema = z
       .object({
         fail_on: z.array(SeveritySchema).default(['critical', 'high']),
         fail_on_incomplete: z.boolean().default(true),
+        fail_on_stale_db: z.boolean().default(false),
+        fail_on_missing_db: z.boolean().default(true),
+        required_scanners: z.array(ScannerIdSchema).default([]),
       })
       .strict()
       .default({
         fail_on: ['critical', 'high'],
         fail_on_incomplete: true,
+        fail_on_stale_db: false,
+        fail_on_missing_db: true,
+        required_scanners: [],
+      }),
+    database: z
+      .object({
+        freshness_threshold_days: z.number().int().min(1).max(365).default(7),
+        stale_threshold_days: z.number().int().min(1).max(365).default(30),
+        auto_update: z.boolean().default(false),
+        custom_cache_dir: z.string().optional(),
+      })
+      .strict()
+      .default({
+        freshness_threshold_days: 7,
+        stale_threshold_days: 30,
+        auto_update: false,
       }),
     execution: z
       .object({

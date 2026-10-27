@@ -21,8 +21,27 @@ export const ScannerStatusSchema = z.enum([
   'skipped',
   'failed',
   'timed_out',
+  'unavailable',
+  'incomplete',
 ]);
 export type ScannerStatus = z.infer<typeof ScannerStatusSchema>;
+
+export const CompletenessSchema = z.enum(['complete', 'partial', 'indeterminate']);
+export type Completeness = z.infer<typeof CompletenessSchema>;
+
+export const DatabaseFreshnessSchema = z.enum([
+  'fresh',
+  'stale',
+  'expired',
+  'missing',
+  'unknown',
+  'invalid',
+  'not_applicable',
+]);
+export type DatabaseFreshness = z.infer<typeof DatabaseFreshnessSchema>;
+
+export const ScanModeSchema = z.enum(['offline', 'online', 'online_assisted']);
+export type ScanMode = z.infer<typeof ScanModeSchema>;
 
 export const ScanExecutionStatusSchema = z.enum([
   'queued',

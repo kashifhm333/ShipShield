@@ -43,11 +43,14 @@ jobs:
       - name: Unit & Integration Test Suite (Coverage Gate)
         run: npm run test:coverage
 
-      - name: Dogfood CLI Smoke Test
+      - name: Dogfood CLI Smoke & Offline Tests
         run: |
           node apps/cli/dist/index.js --version
           node apps/cli/dist/index.js --help
+          node apps/cli/dist/index.js doctor
+          node apps/cli/dist/index.js doctor --json
           node apps/cli/dist/index.js plan --list-scanners
+          node apps/cli/dist/index.js scan --offline --format json
 
   packaging-gate:
     name: Ubuntu Debian & Launchpad Source Package Gate
@@ -93,9 +96,9 @@ jobs:
           test -f /tmp/chroot-source-verify/debian/rules
           echo "✔ Source package extracted and verified cleanly."
 
-      - name: Run Lintian on Debian Source & Binary Packages
+      - name: Run Lintian on Debian Binary Package
         run: |
-          lintian --no-tag-display-limit dist-deb/shipshield_*.dsc dist-deb/shipshield_*_all.deb || true
+          lintian --tag-display-limit 0 dist-deb/shipshield_*_all.deb
 
       - name: Test Local .deb Package Installation (with Dependency Resolution)
         run: |
@@ -103,6 +106,8 @@ jobs:
           which shipshield
           shipshield --version
           shipshield doctor
+          shipshield doctor --json
+          shipshield scan --offline
           shipshield plan --list-scanners
 
       - name: Test Local .deb Package Removal

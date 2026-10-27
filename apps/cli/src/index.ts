@@ -13,6 +13,7 @@ import { makeShowCommand } from './commands/show.command.js';
 import { makeFixCommand } from './commands/fix.command.js';
 import { makeVerifyCommand } from './commands/verify.command.js';
 import { makeEngineCommand } from './commands/engine.command.js';
+import { makeUpdateDbCommand } from './commands/update-db.command.js';
 
 export function createProgram(): Command {
   const program = new Command();
@@ -57,6 +58,7 @@ export function createProgram(): Command {
     makeShowCommand(),
     makeFixCommand(),
     makeVerifyCommand(),
+    makeUpdateDbCommand(),
   ];
 
   for (const cmd of subcommands) {

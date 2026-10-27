@@ -136,10 +136,31 @@ Description: Production-grade local-first DevSecOps security gate platform
  misconfigurations, and infrastructure-as-code risks before they ship.
 EOF
 
-# Copy maintainer scripts
-cp "${ROOT_DIR}/debian/postinst" "${STAGE_DIR}/DEBIAN/postinst"
-cp "${ROOT_DIR}/debian/prerm" "${STAGE_DIR}/DEBIAN/prerm"
-cp "${ROOT_DIR}/debian/postrm" "${STAGE_DIR}/DEBIAN/postrm"
+# Copy maintainer scripts (stripping unexpanded debhelper placeholder for direct dpkg-deb builds)
+sed '/#DEBHELPER#/d' "${ROOT_DIR}/debian/postinst" > "${STAGE_DIR}/DEBIAN/postinst"
+sed '/#DEBHELPER#/d' "${ROOT_DIR}/debian/prerm" > "${STAGE_DIR}/DEBIAN/prerm"
+sed '/#DEBHELPER#/d' "${ROOT_DIR}/debian/postrm" > "${STAGE_DIR}/DEBIAN/postrm"
+
+# Install binary lintian overrides
+mkdir -p "${STAGE_DIR}/usr/share/lintian/overrides"
+if [ -f "${ROOT_DIR}/debian/shipshield.lintian-overrides" ]; then
+  cp "${ROOT_DIR}/debian/shipshield.lintian-overrides" "${STAGE_DIR}/usr/share/lintian/overrides/shipshield"
+fi
+
+# Normalize permissions across staged hierarchy to conform to Debian packaging standards
+find "${STAGE_DIR}" -type d -exec chmod 0755 {} +
+find "${STAGE_DIR}" -type f -exec chmod 0644 {} +
+chmod 0755 "${STAGE_DIR}/usr/bin/shipshield"
+if [ -f "${STAGE_DIR}/usr/lib/shipshield/apps/cli/dist/index.js" ]; then
+  chmod 0755 "${STAGE_DIR}/usr/lib/shipshield/apps/cli/dist/index.js"
+fi
+if [ -f "${STAGE_DIR}/usr/lib/shipshield/apps/cli/dist/index.d.ts" ]; then
+  sed -i '1{/^#!/d}' "${STAGE_DIR}/usr/lib/shipshield/apps/cli/dist/index.d.ts"
+fi
+# Any bundled script with a shebang must be executable per Debian policy (safely handling spaces in paths)
+find "${STAGE_DIR}" -type f -exec grep -l "^#!" {} + | while IFS= read -r script_file; do
+  [ -f "$script_file" ] && chmod 0755 "$script_file"
+done
 chmod 0755 "${STAGE_DIR}/DEBIAN/postinst" "${STAGE_DIR}/DEBIAN/prerm" "${STAGE_DIR}/DEBIAN/postrm"
 
 # Build Binary .deb

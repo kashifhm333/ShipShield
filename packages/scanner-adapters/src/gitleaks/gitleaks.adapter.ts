@@ -55,18 +55,64 @@ export class GitleaksAdapter implements ScannerAdapter {
     return { available: false, error: res.stderr || 'Binary not found or execution failed' };
   }
 
+  private mapSecretSeverityAndConfidence(ruleId: string, entropy: number, tags: string[] = []): {
+    severity: 'critical' | 'high' | 'medium' | 'low';
+    confidence: 'high' | 'medium' | 'low';
+  } {
+    const r = ruleId.toLowerCase();
+    const tagList = (tags || []).map((t) => t.toLowerCase());
+
+    // Critical: Direct cloud/infrastructure provider credentials, private keys, live payment tokens
+    if (
+      r.includes('aws') ||
+      r.includes('gcp') ||
+      r.includes('google') ||
+      r.includes('azure') ||
+      r.includes('private-key') ||
+      r.includes('privatekey') ||
+      r.includes('stripe') ||
+      r.includes('github') ||
+      r.includes('slack')
+    ) {
+      return { severity: 'critical', confidence: 'high' };
+    }
+
+    // High: SaaS API tokens, OAuth secrets, database passwords, high entropy credentials
+    if (
+      r.includes('token') ||
+      r.includes('api-key') ||
+      r.includes('apikey') ||
+      r.includes('secret') ||
+      r.includes('password') ||
+      entropy >= 4.0 ||
+      tagList.includes('key')
+    ) {
+      return { severity: 'high', confidence: entropy >= 3.5 ? 'high' : 'medium' };
+    }
+
+    // Medium: Generic tokens or lower entropy matches
+    if (entropy >= 3.0 || r.includes('generic')) {
+      return { severity: 'medium', confidence: 'medium' };
+    }
+
+    return { severity: 'low', confidence: 'low' };
+  }
+
   public async scan(options: ScannerAdapterOptions): Promise<ScannerRunResult> {
     const startTime = Date.now();
     const availability = await this.checkAvailability();
     if (!availability.available) {
       return {
         id: this.id,
-        status: 'skipped',
+        status: 'unavailable',
         engine: this.binaryName,
         durationMs: Date.now() - startTime,
         findingCount: 0,
         findings: [],
         errorMessage: availability.error || 'Binary not found',
+        completeness: 'indeterminate',
+        offline: true,
+        remediationGuidance: 'Install Gitleaks via "sudo apt install gitleaks" or download from https://github.com/gitleaks/gitleaks/releases',
       };
     }
 
@@ -78,11 +124,13 @@ export class GitleaksAdapter implements ScannerAdapter {
         'detect',
         '--source',
         options.workspacePath,
-        '--no-git',
+        ...(options.scanGitHistory ? [] : ['--no-git']),
         '--report-format',
         'json',
         '--report-path',
         tmpReportFile,
+        '--redact',
+        '100',
         '--no-banner',
         '--exit-code',
         '1',
@@ -93,6 +141,7 @@ export class GitleaksAdapter implements ScannerAdapter {
         args,
         cwd: options.workspacePath,
         timeoutMs: options.timeoutSeconds * 1000,
+        offline: true, // Gitleaks is strictly offline
       });
 
       if (res.timedOut) {
@@ -105,6 +154,8 @@ export class GitleaksAdapter implements ScannerAdapter {
           findingCount: 0,
           findings: [],
           errorMessage: 'Gitleaks scan timed out',
+          completeness: 'indeterminate',
+          offline: true,
         };
       }
 
@@ -119,6 +170,8 @@ export class GitleaksAdapter implements ScannerAdapter {
           findingCount: 0,
           findings: [],
           errorMessage: res.stderr || `Gitleaks exited with code ${res.exitCode}`,
+          completeness: 'indeterminate',
+          offline: true,
         };
       }
 
@@ -132,6 +185,8 @@ export class GitleaksAdapter implements ScannerAdapter {
           findingCount: 0,
           findings: [],
           errorMessage: null,
+          completeness: 'complete',
+          offline: true,
         };
       }
 
@@ -145,6 +200,8 @@ export class GitleaksAdapter implements ScannerAdapter {
           findingCount: 0,
           findings: [],
           errorMessage: 'Expected Gitleaks report file was not produced',
+          completeness: 'indeterminate',
+          offline: true,
         };
       }
 
@@ -163,6 +220,8 @@ export class GitleaksAdapter implements ScannerAdapter {
           findingCount: 0,
           findings: [],
           errorMessage: `Malformed JSON from Gitleaks: ${error.message}`,
+          completeness: 'indeterminate',
+          offline: true,
         };
       }
 
@@ -185,7 +244,11 @@ export class GitleaksAdapter implements ScannerAdapter {
 
         const id = FingerprintGenerator.generatePublicId('secrets', fingerprint);
 
-        const severity = item.RuleID.toLowerCase().includes('entropy') ? 'high' : 'critical';
+        const { severity, confidence } = this.mapSecretSeverityAndConfidence(
+          item.RuleID,
+          item.Entropy,
+          item.Tags
+        );
 
         findings.push({
           id,
@@ -197,8 +260,8 @@ export class GitleaksAdapter implements ScannerAdapter {
           title: `Exposed Secret: ${item.RuleID}`,
           description: redactedSummary || `Potential secret matching rule ${item.RuleID} detected`,
           severity,
-          severity_original: 'CRITICAL',
-          confidence: 'high',
+          severity_original: 'HIGH',
+          confidence,
           location: {
             path: relativePath.split(path.sep).join('/'),
             start_line: item.StartLine,
@@ -228,7 +291,10 @@ export class GitleaksAdapter implements ScannerAdapter {
         findingCount: findings.length,
         findings,
         errorMessage: null,
+        completeness: 'complete',
+        offline: true,
       };
+
     } finally {
       try {
         fs.rmSync(tmpDir, { recursive: true, force: true });

@@ -1,4 +1,5 @@
 import { Command } from 'commander';
+import fs from 'node:fs';
 import path from 'node:path';
 import {
   ScannerId,
@@ -11,6 +12,7 @@ import {
   ScanOrchestrator,
   AdapterRegistry,
   EngineClient,
+  IntelligenceManager,
 } from '@shipshield/scan-core';
 import {
   GitleaksAdapter,
@@ -30,6 +32,10 @@ export function makeScanCommand(): Command {
     .option('--timeout <sec>', 'Execution timeout per scanner in seconds', parseInt)
     .option('--jobs <count>', 'Maximum parallel scanners to execute', parseInt)
     .option('--format <format>', 'Output format (text | json)')
+    .option('--output <path>', 'Write scan report to specified file path')
+    .option('--show-db-status', 'Display vulnerability database status and freshness before scan')
+    .option('--require <name...>', 'Require specified scanners to execute and complete (secrets, dependencies, containers, iac)')
+    .option('--max-db-age <days>', 'Maximum database age in days before warning or failing on stale intelligence', parseInt)
     .option('--detach', 'Submit scan asynchronously to engine and return scan ID immediately')
     .option('--no-report', 'Do not write reports to disk')
     .action(async (targetPath: string, options, cmd: Command) => {
@@ -137,6 +143,21 @@ export function makeScanCommand(): Command {
         console.error(`ℹ Tip: Run 'shipshield engine start' to accelerate scans via background daemon.`);
       }
 
+      if (options.showDbStatus && !isJson && !globalOpts.quiet) {
+        const readiness = await IntelligenceManager.getReadinessReport(config);
+        console.log('\n🛡️  Vulnerability Intelligence & Database Status:');
+        for (const [id, intel] of Object.entries(readiness.scanners)) {
+          if (intel.databaseRequired) {
+            console.log(
+              `  • ${id.padEnd(14)}: ${intel.freshness.toUpperCase()} (version: ${intel.databaseVersion || 'unknown'}, age: ${intel.databaseAgeDays !== null ? `${intel.databaseAgeDays}d` : 'unknown'})`
+            );
+          } else {
+            console.log(`  • ${id.padEnd(14)}: LOCAL RULES (offline ready)`);
+          }
+        }
+        console.log('');
+      }
+
       try {
         const result = await ScanOrchestrator.run({
           projectRoot,
@@ -145,6 +166,8 @@ export function makeScanCommand(): Command {
           selectedScanners: options.scanner as ScannerId[] | undefined,
           offline: options.offline,
           writeReports: options.report !== false,
+          requireScanners: options.require as ScannerId[] | undefined,
+          maxDbAgeDays: options.maxDbAge,
         });
 
         if (isJson) {
@@ -153,9 +176,39 @@ export function makeScanCommand(): Command {
           presenter.renderReport(result.report);
         }
 
+        // Handle explicit --output file writing
+        if (options.output) {
+          const outputPath = path.resolve(process.cwd(), options.output);
+          fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+          const contentToWrite = isJson
+            ? JSON.stringify(result.report, null, 2) + '\n'
+            : result.markdownReportPath && fs.existsSync(result.markdownReportPath)
+              ? fs.readFileSync(result.markdownReportPath, 'utf8')
+              : JSON.stringify(result.report, null, 2) + '\n';
+          fs.writeFileSync(outputPath, contentToWrite, 'utf8');
+        }
+
         const isPolicyFail = result.report.scan.policy_outcome === 'policy_failed';
         const isIncomplete = result.report.scan.policy_outcome === 'incomplete';
-        process.exit(isPolicyFail ? EXIT_CODES.POLICY_FAILED : isIncomplete ? EXIT_CODES.INCOMPLETE : EXIT_CODES.PASSED);
+
+        if (isPolicyFail) {
+          process.exit(EXIT_CODES.POLICY_FAILED);
+        } else if (isIncomplete) {
+          const hasMissingRequired = options.require && (options.require as string[]).some((reqId) => {
+            const sc = result.report.scanners.find((s) => s.id === reqId);
+            return !sc || sc.status !== 'completed';
+          });
+          const hasMissingDb = result.report.scanners.some((s) => s.db_status === 'missing' || s.db_status === 'invalid');
+          if (hasMissingRequired) {
+            process.exit(EXIT_CODES.REQUIRED_SCANNER_UNAVAILABLE);
+          } else if (hasMissingDb && options.offline) {
+            process.exit(EXIT_CODES.DATABASE_ERROR);
+          } else {
+            process.exit(EXIT_CODES.INCOMPLETE);
+          }
+        } else {
+          process.exit(EXIT_CODES.PASSED);
+        }
       } catch (err: unknown) {
         console.error(`Internal Scan Error: ${(err as Error).message}`);
         process.exit(EXIT_CODES.INTERNAL_ERROR);

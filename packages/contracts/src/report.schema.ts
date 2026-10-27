@@ -1,5 +1,11 @@
 import { z } from 'zod';
-import { ScannerIdSchema, ScannerStatusSchema } from './enums.js';
+import {
+  ScannerIdSchema,
+  ScannerStatusSchema,
+  CompletenessSchema,
+  DatabaseFreshnessSchema,
+  ScanModeSchema,
+} from './enums.js';
 import { NormalizedFindingSchema } from './finding.schema.js';
 
 export const ScannerSummaryItemSchema = z
@@ -11,6 +17,15 @@ export const ScannerSummaryItemSchema = z
     duration_ms: z.number().int().min(0),
     finding_count: z.number().int().min(0),
     error_message: z.string().nullable().default(null),
+    completeness: CompletenessSchema.optional().default('complete'),
+    offline: z.boolean().optional().default(false),
+    db_version: z.string().optional(),
+    db_status: DatabaseFreshnessSchema.optional().default('not_applicable'),
+    db_updated_at: z.string().optional(),
+    db_age_days: z.number().int().min(0).optional(),
+    targets_examined: z.number().int().min(0).optional(),
+    skipped_checks: z.array(z.string()).optional().default([]),
+    remediation_guidance: z.string().nullable().optional().default(null),
   })
   .strict();
 
@@ -36,6 +51,8 @@ export const ScanReportSchema = z
         id: z.string().regex(/^scan_[A-Za-z0-9_-]{10,40}$/),
         started_at: z.string().datetime(),
         completed_at: z.string().datetime(),
+        mode: ScanModeSchema.optional().default('online_assisted'),
+        completeness: CompletenessSchema.optional().default('complete'),
         scope: z
           .object({
             kind: z.enum(['full', 'changed']),
@@ -46,6 +63,15 @@ export const ScanReportSchema = z
           .strict(),
         execution_status: z.enum(['completed', 'failed', 'timed_out', 'cancelled']),
         policy_outcome: z.enum(['passed', 'policy_failed', 'incomplete']),
+        db_summary: z
+          .object({
+            fresh: z.number().int().min(0),
+            stale: z.number().int().min(0),
+            expired: z.number().int().min(0),
+            missing: z.number().int().min(0),
+            unknown: z.number().int().min(0),
+          })
+          .optional(),
       })
       .strict(),
     project: z

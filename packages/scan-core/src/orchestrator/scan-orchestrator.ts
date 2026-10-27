@@ -25,6 +25,8 @@ export interface ScanOrchestratorOptions {
   offline?: boolean | undefined;
   suppressions?: ActiveSuppression[] | undefined;
   writeReports?: boolean | undefined;
+  requireScanners?: ScannerId[] | undefined;
+  maxDbAgeDays?: number | undefined;
 }
 
 export interface OrchestratorRunResult {
@@ -90,6 +92,14 @@ export class ScanOrchestrator {
   public static async run(options: ScanOrchestratorOptions): Promise<OrchestratorRunResult> {
     const startedAt = new Date().toISOString();
     const scanId = this.generateScanId();
+    const isOffline = Boolean(options.offline || options.config.execution.network === 'deny');
+
+    // Merge required scanners if specified
+    if (options.requireScanners && options.requireScanners.length > 0) {
+      options.config.policy.required_scanners = Array.from(
+        new Set([...options.config.policy.required_scanners, ...options.requireScanners])
+      );
+    }
 
     // 1. Discover files and check applicability
     const discovered = FileWalker.walk(options.projectRoot, options.config.execution.exclude);
@@ -129,6 +139,8 @@ export class ScanOrchestrator {
             findingCount: 0,
             findings: [],
             errorMessage: null,
+            completeness: 'complete',
+            offline: isOffline,
           });
           continue;
         }
@@ -136,7 +148,9 @@ export class ScanOrchestrator {
         const runResult = await adapter.scan({
           workspacePath: options.projectRoot,
           timeoutSeconds: options.config.execution.timeout_seconds,
-          offline: options.offline || options.config.execution.network === 'deny',
+          offline: isOffline,
+          maxDbAgeDays: options.maxDbAgeDays ?? options.config.database.stale_threshold_days,
+          customCacheDir: options.config.database.custom_cache_dir,
         });
         scannerRuns.push(runResult);
       }
@@ -182,13 +196,32 @@ export class ScanOrchestrator {
 
     const hasTimedOut = scannerRuns.some((r) => r.status === 'timed_out');
     const hasFailedOrSkipped = scannerRuns.some(
-      (r) => r.status === 'failed' || r.status === 'skipped'
+      (r) =>
+        r.status === 'failed' ||
+        r.status === 'skipped' ||
+        r.status === 'unavailable' ||
+        r.status === 'incomplete'
     );
     const executionStatus: 'completed' | 'failed' | 'timed_out' = hasTimedOut
       ? 'timed_out'
       : hasFailedOrSkipped
         ? 'failed'
         : 'completed';
+
+    // Calculate database summary counts
+    let freshCount = 0;
+    let staleCount = 0;
+    let expiredCount = 0;
+    let missingCount = 0;
+    let unknownCount = 0;
+
+    for (const r of scannerRuns) {
+      if (r.dbStatus === 'fresh') freshCount++;
+      else if (r.dbStatus === 'stale') staleCount++;
+      else if (r.dbStatus === 'expired') expiredCount++;
+      else if (r.dbStatus === 'missing') missingCount++;
+      else if (r.dbStatus === 'unknown' || r.dbStatus === 'invalid') unknownCount++;
+    }
 
     // 6. Build final ScanReport
     const report: ScanReport = {
@@ -201,12 +234,21 @@ export class ScanOrchestrator {
         id: scanId,
         started_at: startedAt,
         completed_at: completedAt,
+        mode: isOffline ? 'offline' : 'online_assisted',
+        completeness: policyResult.completeness,
         scope: {
           kind: 'full',
           root: options.projectRoot,
         },
         execution_status: executionStatus,
         policy_outcome: policyResult.policyOutcome as 'passed' | 'policy_failed' | 'incomplete',
+        db_summary: {
+          fresh: freshCount,
+          stale: staleCount,
+          expired: expiredCount,
+          missing: missingCount,
+          unknown: unknownCount,
+        },
       },
       project: {
         name: options.config.project.name,
@@ -220,6 +262,15 @@ export class ScanOrchestrator {
         duration_ms: r.durationMs,
         finding_count: r.findingCount,
         error_message: r.errorMessage,
+        completeness: r.completeness ?? 'complete',
+        offline: r.offline ?? isOffline,
+        db_version: r.dbVersion,
+        db_status: r.dbStatus ?? 'not_applicable',
+        db_updated_at: r.dbUpdatedAt,
+        db_age_days: r.dbAgeDays,
+        targets_examined: r.targetsExamined,
+        skipped_checks: r.skippedChecks ?? [],
+        remediation_guidance: r.remediationGuidance ?? null,
       })),
       summary: policyResult.summary,
       findings: policyResult.findings,
@@ -228,7 +279,7 @@ export class ScanOrchestrator {
         rules_evaluated: policyResult.rulesEvaluated,
         violations: policyResult.violations,
       },
-      warnings: [],
+      warnings: policyResult.warnings,
       errors: scannerRuns.filter((r) => r.errorMessage).map((r) => `[${r.id}] ${r.errorMessage}`),
     };
 

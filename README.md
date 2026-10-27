@@ -308,9 +308,12 @@ ShipShield provides a comprehensive local-first CLI for scanning, policy enforce
 
 | Command | Description | Example |
 | :--- | :--- | :--- |
-| **`doctor`** | Check scanner engines, environment, and database diagnostics | `shipshield doctor` |
+| **`doctor`** | Check scanner engines, environment, and offline database diagnostics | `shipshield doctor` |
+| **`doctor --json`** | Output machine-readable readiness assessment | `shipshield doctor --json` |
+| **`update-db`** | Securely download, stage, and atomically activate vulnerability databases | `shipshield update-db` |
 | **`init`** | Initialize `.shipshield.yaml` configuration in workspace | `shipshield init` |
 | **`scan`** | Run security scans (secrets, dependencies, containers, IaC) | `shipshield scan .` |
+| **`scan --offline`** | Execute security scans in strict offline mode (no network calls) | `shipshield scan . --offline` |
 | **`plan`** | Run scanners, evaluate policies, and generate report plan | `shipshield plan` |
 | **`scans`** | List persistent local scan history and job IDs | `shipshield scans` |
 | **`status`** | Display progress, duration, and metrics for a scan job | `shipshield status <scan-id>` |
@@ -330,6 +333,9 @@ Check whether runtime dependencies, background sockets, database persistence, an
 ```bash
 # Run comprehensive environment and scanner diagnostics
 shipshield doctor
+
+# Output machine-readable diagnostics for automation and CI/CD gates
+shipshield doctor --json
 ```
 
 ---
@@ -394,10 +400,22 @@ Submit the scan to the background engine and receive the scan ID immediately wit
 shipshield scan . --detach
 ```
 
-#### G. Offline Mode & Performance Flags
+#### G. Offline Mode & Intelligence Guarantees
 ```bash
-# Force offline mode (skip remote CVE database fetches)
+# Force strict offline mode (zero network calls, uses local cached databases)
 shipshield scan . --offline
+
+# Display vulnerability intelligence age and freshness status before scanning
+shipshield scan . --show-db-status
+
+# Require specific scanners to execute and complete (fails with code 7 if unavailable)
+shipshield scan . --require secrets dependencies
+
+# Override freshness threshold for stale intelligence detection (in days)
+shipshield scan . --max-db-age 14
+
+# Write scan report to a custom file path
+shipshield scan . --format json --output /path/to/report.json
 
 # Set per-scanner execution timeout (in seconds)
 shipshield scan . --timeout 120
@@ -411,6 +429,32 @@ Run scanner evaluations and generate report plans without applying fixes:
 ```bash
 shipshield plan
 ```
+
+---
+
+### 6.5 Vulnerability Intelligence Management (`update-db`)
+
+When operating in an air-gapped or network-restricted environment, ShipShield separates database updates from scanning. Use `update-db` to safely manage vulnerability intelligence:
+
+```bash
+# 1. Inspect local database status without downloading (safe read-only check)
+shipshield update-db --check-only
+
+# 2. Output database freshness diagnostics as machine-readable JSON
+shipshield update-db --check-only --json
+
+# 3. Download, stage, verify, and atomically activate fresh vulnerability intelligence
+shipshield update-db
+
+# 4. Target a specific scanner database
+shipshield update-db --scanner dependencies
+
+# 5. Force update even if the database is currently considered fresh
+shipshield update-db --force
+```
+
+> [!NOTE]
+> **Atomic Activation & Rollback Guarantee**: Database downloads are staged in an isolated temporary location. Integrity is verified before replacement. If downloading or unpacking fails, the previous working database is automatically preserved without corrupting the local intelligence cache.
 
 ---
 
@@ -540,10 +584,25 @@ project:
   name: "my-web-app"
 
 policy:
-  # Severities that cause shipshield scan to exit with code 1
+  # Severities that cause shipshield scan to exit with code 4 (policy failure)
   fail_on:
     - critical
     - high
+
+  # Enforce required scanner engines (fails with exit code 7 if unavailable)
+  required_scanners:
+    - secrets
+    - dependencies
+
+  # Fail-closed policy switches for offline intelligence
+  fail_on_stale_db: true
+  fail_on_missing_db: true
+
+# Offline vulnerability intelligence & database freshness thresholds
+database:
+  freshness_threshold_days: 7
+  stale_threshold_days: 30
+  auto_update_in_offline_mode: false
 
 scanners:
   secrets:
@@ -577,16 +636,19 @@ reports:
 
 ## Exit Code Contracts for CI/CD
 
-ShipShield uses deterministic exit codes so your CI/CD pipelines (GitHub Actions, GitLab CI, Jenkins) can cleanly branch on specific outcomes:
+ShipShield uses deterministic, standardized exit codes so your CI/CD pipelines (GitHub Actions, GitLab CI, Jenkins) can cleanly branch on specific outcomes:
 
 | Exit Code | Name | Description |
 | :---: | :--- | :--- |
-| **`0`** | `PASSED` | All scanners completed cleanly; no findings violate policy. |
-| **`1`** | `POLICY_VIOLATION` | Findings detected that violate configured severity thresholds (`--fail-on`). |
-| **`2`** | `USAGE_ERROR` | Invalid CLI arguments, flags, or syntax. |
-| **`3`** | `CONFIG_ERROR` | Corrupt or unreadable `.shipshield.yaml` configuration. |
-| **`4`** | `INTERNAL_ERROR` | Engine error or scanner subprocess failure. |
-| **`5`** | `REPORT_ERROR` | Error generating, reading, or parsing scan report artifacts. |
+| **`0`** | `PASSED` | All scanners completed cleanly; zero findings violate policy. |
+| **`1`** | `FINDINGS_DETECTED` | Security findings were detected (informational / non-policy failing). |
+| **`2`** | `USAGE_ERROR` / `CONFIG_ERROR` | Invalid CLI arguments, unrecognized flags, or corrupt `.shipshield.yaml`. |
+| **`3`** | `INTERNAL_ERROR` | Unhandled engine runtime exception or unexpected system failure. |
+| **`4`** | `POLICY_FAILED` / `INCOMPLETE` | Security gate failed (critical findings detected, scan timed out, or incomplete scanner). |
+| **`5`** | `REPORT_ERROR` | Error generating, reading, or parsing report artifacts from disk. |
+| **`6`** | `ENGINE_ERROR` | Background engine daemon error or IPC socket communication failure. |
+| **`7`** | `REQUIRED_SCANNER_UNAVAILABLE` | A scanner marked required by `--require` or `policy.required_scanners` is missing or failed. |
+| **`8`** | `DATABASE_ERROR` | Vulnerability intelligence database is missing, expired, corrupted, or failed atomic update. |
 
 ---
 

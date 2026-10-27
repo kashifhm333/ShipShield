@@ -1,13 +1,15 @@
 import { spawn, ChildProcess } from 'node:child_process';
+import { RedactionEngine } from './redaction-engine.js';
 
 export interface ProcessRunnerOptions {
   executable: string;
   args: string[];
   cwd: string;
-  envAllowlist?: Record<string, string>;
+  envAllowlist?: Record<string, string> | undefined;
   timeoutMs: number;
-  maxOutputBufferBytes?: number; // Default: 20 * 1024 * 1024 (20MB)
-  maxBufferBytes?: number;
+  maxOutputBufferBytes?: number | undefined; // Default: 20 * 1024 * 1024 (20MB)
+  maxBufferBytes?: number | undefined;
+  offline?: boolean | undefined;
 }
 
 export interface ProcessRunResult {
@@ -35,14 +37,27 @@ export class ProcessRunner {
 
   /**
    * Constructs an isolated environment containing only safe system keys plus explicit allowlist.
+   * If offline is enabled, strictly injects offline enforcement variables.
    */
-  public static sanitizeEnvironment(allowlist?: Record<string, string>): Record<string, string> {
+  public static sanitizeEnvironment(
+    allowlist?: Record<string, string>,
+    offline?: boolean
+  ): Record<string, string> {
     const sanitized: Record<string, string> = {};
 
     for (const key of this.SAFE_ENV_VARS) {
       if (process.env[key] !== undefined) {
         sanitized[key] = process.env[key] as string;
       }
+    }
+
+    if (offline) {
+      sanitized.TRIVY_OFFLINE_SCAN = 'true';
+      sanitized.TRIVY_SKIP_DB_UPDATE = 'true';
+      sanitized.TRIVY_SKIP_JAVA_DB_UPDATE = 'true';
+      sanitized.CHECKOV_SKIP_DOWNLOAD = 'true';
+      sanitized.CHECKOV_OFFLINE = 'true';
+      sanitized.BC_OFFLINE_MODE = 'true';
     }
 
     if (allowlist) {
@@ -60,8 +75,9 @@ export class ProcessRunner {
    */
   public static async run(options: ProcessRunnerOptions): Promise<ProcessRunResult> {
     const maxBuffer = options.maxBufferBytes ?? options.maxOutputBufferBytes ?? 20 * 1024 * 1024;
-    const sanitizedEnv = this.sanitizeEnvironment(options.envAllowlist);
+    const sanitizedEnv = this.sanitizeEnvironment(options.envAllowlist, options.offline);
     const startTime = Date.now();
+
 
     return new Promise<ProcessRunResult>((resolve) => {
       let child: ChildProcess;
@@ -157,11 +173,12 @@ export class ProcessRunner {
         if (timeoutTimer) clearTimeout(timeoutTimer);
         if (killEscalationTimer) clearTimeout(killEscalationTimer);
 
+        const safeStderr = RedactionEngine.redact(stderr ? `${stderr}\n${err.message}` : err.message);
         resolve({
           exitCode: 127,
           signal: null,
           stdout,
-          stderr: stderr ? `${stderr}\n${err.message}` : err.message,
+          stderr: safeStderr,
           durationMs: Date.now() - startTime,
           timedOut: false,
           bufferOverflowed,
@@ -174,11 +191,12 @@ export class ProcessRunner {
         if (timeoutTimer) clearTimeout(timeoutTimer);
         if (killEscalationTimer) clearTimeout(killEscalationTimer);
 
+        const safeStderr = RedactionEngine.redact(stderr);
         resolve({
           exitCode: timedOut ? null : code,
           signal,
           stdout,
-          stderr,
+          stderr: safeStderr,
           durationMs: Date.now() - startTime,
           timedOut,
           bufferOverflowed,

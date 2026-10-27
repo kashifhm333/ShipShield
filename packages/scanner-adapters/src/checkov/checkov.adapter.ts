@@ -45,7 +45,7 @@ export class CheckovAdapter implements ScannerAdapter {
       executable: this.binaryName,
       args: ['--version'],
       cwd: process.cwd(),
-      timeoutMs: 5000,
+      timeoutMs: 15000,
     });
 
     if (res.exitCode === 0) {
@@ -83,12 +83,15 @@ export class CheckovAdapter implements ScannerAdapter {
     if (!availability.available) {
       return {
         id: this.id,
-        status: 'skipped',
+        status: 'unavailable',
         engine: this.binaryName,
         durationMs: Date.now() - startTime,
         findingCount: 0,
         findings: [],
         errorMessage: availability.error || 'Binary not found',
+        completeness: 'indeterminate',
+        offline: Boolean(options.offline),
+        remediationGuidance: 'Install Checkov via "pip install checkov" or visit https://www.checkov.io/',
       };
     }
 
@@ -106,6 +109,7 @@ export class CheckovAdapter implements ScannerAdapter {
         tmpDir,
         '--quiet',
         '--compact',
+        ...(options.offline ? ['--skip-download', '--download-external-modules', 'false'] : []),
       ];
 
       const res = await ProcessRunner.run({
@@ -113,6 +117,7 @@ export class CheckovAdapter implements ScannerAdapter {
         args,
         cwd: options.workspacePath,
         timeoutMs: options.timeoutSeconds * 1000,
+        offline: options.offline,
       });
 
       if (res.timedOut) {
@@ -125,6 +130,8 @@ export class CheckovAdapter implements ScannerAdapter {
           findingCount: 0,
           findings: [],
           errorMessage: 'Checkov scan timed out',
+          completeness: 'indeterminate',
+          offline: Boolean(options.offline),
         };
       }
 
@@ -139,8 +146,11 @@ export class CheckovAdapter implements ScannerAdapter {
           findingCount: 0,
           findings: [],
           errorMessage: res.stderr || `Checkov exited with code ${res.exitCode}`,
+          completeness: 'indeterminate',
+          offline: Boolean(options.offline),
         };
       }
+
 
       // Locate results_json.json produced by Checkov in tmpDir or parse stdout
       let rawJson: string | null = null;
@@ -262,6 +272,8 @@ export class CheckovAdapter implements ScannerAdapter {
         findingCount: findings.length,
         findings,
         errorMessage: null,
+        completeness: 'complete',
+        offline: Boolean(options.offline),
       };
     } finally {
       try {
