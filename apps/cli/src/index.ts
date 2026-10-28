@@ -14,6 +14,11 @@ import { makeFixCommand } from './commands/fix.command.js';
 import { makeVerifyCommand } from './commands/verify.command.js';
 import { makeEngineCommand } from './commands/engine.command.js';
 import { makeUpdateDbCommand } from './commands/update-db.command.js';
+import { makeCheckCommand } from './commands/check.command.js';
+import { makeDbCommand } from './commands/db.command.js';
+import { makePolicyCommand } from './commands/policy.command.js';
+import { makeConfigCommand } from './commands/config.command.js';
+import { makeReportCommand } from './commands/report.command.js';
 
 export function createProgram(): Command {
   const program = new Command();
@@ -25,7 +30,7 @@ export function createProgram(): Command {
     .option('--project-dir <path>', 'Explicit path to project workspace directory')
     .option('--config <path>', 'Path to custom .shipshield.yaml config file')
     .option('--report-dir <path>', 'Override directory for scan reports')
-    .option('--format <format>', 'Output format (text | json)', 'text')
+    .option('--format <format>', 'Output format (text | json | sarif)', 'text')
     .option('--no-color', 'Disable colored terminal output')
     .option('--quiet', 'Suppress non-essential progress output')
     .option('--verbose', 'Enable verbose scanner execution logs')
@@ -47,16 +52,21 @@ export function createProgram(): Command {
 
   const subcommands = [
     makeScanCommand(),
+    makeCheckCommand(),
+    makeDoctorCommand(),
+    makeInitCommand(),
+    makePolicyCommand(),
+    makeDbCommand(),
+    makeConfigCommand(),
+    makeFixCommand(),
+    makeReportCommand(),
     makeScansCommand(),
     makeStatusCommand(),
     makeResultsCommand(),
     makeCancelCommand(),
-    makeDoctorCommand(),
     makeEngineCommand(),
-    makeInitCommand(),
     makePlanCommand(),
     makeShowCommand(),
-    makeFixCommand(),
     makeVerifyCommand(),
     makeUpdateDbCommand(),
   ];

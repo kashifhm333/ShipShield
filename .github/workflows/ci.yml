@@ -49,8 +49,11 @@ jobs:
           node apps/cli/dist/index.js --help
           node apps/cli/dist/index.js doctor
           node apps/cli/dist/index.js doctor --json
-          node apps/cli/dist/index.js plan --list-scanners
-          node apps/cli/dist/index.js scan --offline --format json
+          node apps/cli/dist/index.js check --mode offline
+          node apps/cli/dist/index.js policy list
+          node apps/cli/dist/index.js policy show SS-SECRET-001
+          node apps/cli/dist/index.js db status
+          node apps/cli/dist/index.js scan . --mode offline --format sarif
 
   packaging-gate:
     name: Ubuntu Debian & Launchpad Source Package Gate

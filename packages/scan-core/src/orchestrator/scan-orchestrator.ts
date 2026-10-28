@@ -16,6 +16,7 @@ import { JsonReportWriter } from '../reports/json-writer.js';
 import { MarkdownReportWriter } from '../reports/markdown-writer.js';
 import { ProcessRunner } from '../security/process-runner.js';
 import { FileWalker } from '../discovery/file-walker.js';
+import { NativePolicyRegistry } from '../policy/native-policy-registry.js';
 
 export interface ScanOrchestratorOptions {
   projectRoot: string;
@@ -170,6 +171,21 @@ export class ScanOrchestrator {
           allFindingsMap.set(finding.fingerprint, finding);
         }
       }
+    }
+
+    // Execute built-in native policies across discovered workspace files
+    try {
+      const nativeFindings = await NativePolicyRegistry.execute(
+        options.projectRoot,
+        discovered.allFiles
+      );
+      for (const nf of nativeFindings) {
+        if (!allFindingsMap.has(nf.fingerprint)) {
+          allFindingsMap.set(nf.fingerprint, nf);
+        }
+      }
+    } catch {
+      // Robustness: policy execution errors never abort scan
     }
 
     // Sort findings deterministically: Severity DESC, Path ASC, StartLine ASC

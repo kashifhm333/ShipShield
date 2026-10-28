@@ -21,6 +21,7 @@
    - [Option 3: Any OS (Linux, macOS, Windows) via Git & Node.js](#option-3-any-os-linux-macos-windows-via-git--nodejs)
    - [Option 4: Ubuntu / Debian via Launchpad PPA](#option-4-ubuntu--debian-via-launchpad-ppa)
    - [Option 5: Docker & Isolated Container Testing](#option-5-docker--isolated-container-testing)
+   - [Maintenance & Uninstallation](#maintenance--uninstallation)
 4. [Installing Security Scanner Engines](#installing-security-scanner-engines)
 5. [Verifying Your Installation (`doctor`)](#verifying-your-installation-doctor)
 6. [CLI Command Reference & Daily Usage Guide](#cli-command-reference--daily-usage-guide)
@@ -28,11 +29,12 @@
    - [6.2 System Health & Diagnostics (`doctor`)](#62-system-health--diagnostics-doctor)
    - [6.3 Project Setup (`init`)](#63-project-setup-init)
    - [6.4 Security Scans (`scan` & `plan`)](#64-security-scans-scan--plan)
-   - [6.5 Scan History & Results (`scans`, `status`, `results`, `show`)](#65-scan-history--results-scans-status-results-show)
-   - [6.6 Automated Remediation & Fixing (`fix` & `verify`)](#66-automated-remediation--fixing-fix--verify)
-   - [6.7 Background Engine Daemon (`engine`)](#67-background-engine-daemon-engine)
-   - [6.8 Canceling Active Scans (`cancel`)](#68-canceling-active-scans-cancel)
-   - [6.9 Global CLI Flags & Options](#69-global-cli-flags--options)
+   - [6.5 Vulnerability Intelligence Management (`update-db`)](#65-vulnerability-intelligence-management-update-db)
+   - [6.6 Scan History & Results (`scans`, `status`, `results`, `show`)](#66-scan-history--results-scans-status-results-show)
+   - [6.7 Automated Remediation & Fixing (`fix` & `verify`)](#67-automated-remediation--fixing-fix--verify)
+   - [6.8 Background Engine Daemon (`engine`)](#68-background-engine-daemon-engine)
+   - [6.9 Canceling Active Scans (`cancel`)](#69-canceling-active-scans-cancel)
+   - [6.10 Global CLI Flags & Options](#610-global-cli-flags--options)
 7. [Configuration Reference (`.shipshield.yaml`)](#configuration-reference-shipshieldyaml)
 8. [Exit Code Contracts for CI/CD](#exit-code-contracts-for-cicd)
 9. [Architecture Overview](#architecture-overview)
@@ -115,9 +117,24 @@ curl -sSL https://raw.githubusercontent.com/kashifhm333/ShipShield/main/install.
 **What this script does automatically**:
 1. Checks for and removes any broken Launchpad PPA configuration files that block `apt update`.
 2. Validates or installs the Node.js (`>= 18.19.0`) runtime and Git.
-3. Downloads the official release binary `shipshield.deb` from GitHub Releases.
-4. Installs the payload into `/usr/lib/shipshield` and symlinks `/usr/bin/shipshield`.
-5. Executes `shipshield doctor` diagnostics automatically.
+3. Automatically inspects and provisions security scanner engines (**Gitleaks**, **Trivy**, and **Checkov**).
+4. Pre-seeds vulnerability intelligence databases for immediate offline scanning capability.
+5. Downloads the official release binary `shipshield.deb` from GitHub Releases (or installs from local artifacts).
+6. Installs the payload into `/usr/lib/shipshield` and sets up `/usr/local/bin/shipshield` launcher.
+7. Executes `shipshield doctor` diagnostics automatically.
+
+**Installer Lifecycle Flags**:
+When running `install.sh` directly:
+```bash
+# Standard installation
+sudo ./install.sh
+
+# Repair installation, refresh symlinks, and check scanner binaries
+sudo ./install.sh --repair
+
+# Cleanly uninstall ShipShield binaries, runtime files, and systemd services
+sudo ./install.sh --uninstall
+```
 
 ---
 
@@ -191,6 +208,25 @@ docker exec shipshield-node bash -c "apt-get update && apt-get install -y /tmp/s
 
 # 4. Verify installation
 docker exec -it shipshield-node shipshield doctor
+```
+
+---
+
+### Maintenance & Uninstallation
+
+ShipShield provides clean lifecycle commands to maintain, repair, or remove all installed components:
+
+```bash
+# Option A: Clean uninstallation using the installer script
+sudo ./install.sh --uninstall
+
+# Option B: Manual removal of system binaries and runtime libraries
+sudo rm -f /usr/local/bin/shipshield /usr/bin/shipshield
+sudo rm -rf /usr/lib/shipshield
+sudo rm -f /usr/lib/systemd/user/shipshield-engine.service /etc/systemd/user/shipshield-engine.service
+
+# Option C: Purge local scan history, databases, and logs
+rm -rf ~/.shipshield
 ```
 
 ---
@@ -270,7 +306,7 @@ shipshield doctor
 🛡️  ShipShield System Diagnostics (Doctor)
 
 1. Runtime Environment:
-   ✔ Node.js:        v18.19.1 (x64-linux)
+   ✔ Node.js:        v20.x / v22.x (x64-linux)
    ✔ CLI Path:       /usr/lib/shipshield/apps/cli/dist/index.js
    ✔ User Home:      /root
    ✔ Config Dir:     /root/.shipshield (writable: true)
@@ -283,13 +319,16 @@ shipshield doctor
    ✔ Database:       /root/.shipshield/shipshield.db (accessible)
    ✔ Job Records:    Accessible
 
-4. Security Scanner Engines:
-   ✔ secrets        : AVAILABLE (Gitleaks Secrets Scanner)
-   ✔ dependencies   : AVAILABLE (Trivy)
-   ✔ containers     : AVAILABLE (Trivy)
-   ✔ iac            : AVAILABLE (Checkov)
+4. Security Scanner Engines & Intelligence:
+   ✔ secrets        : AVAILABLE (Gitleaks Secrets Scanner - 8.x)
+   ✔ dependencies   : AVAILABLE (Trivy Dependency Vulnerability Scanner - 0.x)
+     ↳ Database:     FRESH (0d old, version: 2)
+   ✔ containers     : AVAILABLE (Trivy Container & Config Scanner - 0.x)
+     ↳ Database:     FRESH (0d old, version: 2)
+   ✔ iac            : AVAILABLE (Checkov Infrastructure-as-Code Scanner - 3.x)
 
 === Diagnostic Summary ===
+✔ Offline Scanning Ready: [secrets, dependencies, containers, iac] available without network.
 ✔ Core systems are operational and ready for scanning.
 ```
 
@@ -309,17 +348,25 @@ ShipShield provides a comprehensive local-first CLI for scanning, policy enforce
 | Command | Description | Example |
 | :--- | :--- | :--- |
 | **`doctor`** | Check scanner engines, environment, and offline database diagnostics | `shipshield doctor` |
-| **`doctor --json`** | Output machine-readable readiness assessment | `shipshield doctor --json` |
-| **`update-db`** | Securely download, stage, and atomically activate vulnerability databases | `shipshield update-db` |
+| **`check`** | Fast preflight verification of scanner and database readiness | `shipshield check --mode offline` |
+| **`policy list`** | List all 17+ native security rules across 6 security categories | `shipshield policy list` |
+| **`policy show`** | Inspect rule details, detection logic, and remediation guidance | `shipshield policy show SS-SECRET-001` |
+| **`policy validate`** | Validate native rule registry integrity and compliance | `shipshield policy validate` |
+| **`db status`** | Check vulnerability database age and freshness | `shipshield db status` |
+| **`db update`** | Securely download and atomically activate vulnerability databases | `shipshield db update` |
+| **`db verify`** | Cryptographically verify intelligence database integrity | `shipshield db verify` |
+| **`config validate`**| Validate syntax and structure of `.shipshield.yaml` | `shipshield config validate` |
 | **`init`** | Initialize `.shipshield.yaml` configuration in workspace | `shipshield init` |
 | **`scan`** | Run security scans (secrets, dependencies, containers, IaC) | `shipshield scan .` |
-| **`scan --offline`** | Execute security scans in strict offline mode (no network calls) | `shipshield scan . --offline` |
+| **`scan --mode offline`** | Execute security scans in strict offline mode (no network calls) | `shipshield scan . --mode offline` |
+| **`scan --format sarif`** | Produce standard OASIS SARIF v2.1.0 output | `shipshield scan . --format sarif` |
+| **`report`** | Read and display recent scan reports from `.shipshield/reports` | `shipshield report` |
 | **`plan`** | Run scanners, evaluate policies, and generate report plan | `shipshield plan` |
 | **`scans`** | List persistent local scan history and job IDs | `shipshield scans` |
 | **`status`** | Display progress, duration, and metrics for a scan job | `shipshield status <scan-id>` |
 | **`results`**| Inspect detailed findings from the latest or specified scan | `shipshield results --latest` |
-| **`show`** | Inspect an existing report without re-running scanners | `shipshield show --dry-run` |
-| **`fix`** | Plan and apply automated code fixes / patches | `shipshield fix --all --dry-run` |
+| **`show`** | Inspect an existing report without re-running scanners | `shipshield show --latest` |
+| **`fix`** | Plan and preview or apply automated fixes / patches | `shipshield fix --all --dry-run` |
 | **`verify`** | Verify whether applied fixes resolved findings | `shipshield verify` |
 | **`engine`** | Start, stop, or view logs of the background acceleration daemon | `shipshield engine status` |
 | **`cancel`** | Abort an active or queued background scan job | `shipshield cancel <scan-id>` |
@@ -458,7 +505,7 @@ shipshield update-db --force
 
 ---
 
-### 6.5 Scan History & Results (`scans`, `status`, `results`, `show`)
+### 6.6 Scan History & Results (`scans`, `status`, `results`, `show`)
 
 ShipShield automatically tracks scan history locally in SQLite:
 
@@ -484,7 +531,7 @@ shipshield show --severity critical
 
 ---
 
-### 6.6 Automated Remediation & Fixing (`fix` & `verify`)
+### 6.7 Automated Remediation & Fixing (`fix` & `verify`)
 
 ShipShield provides automated remediations for supported vulnerabilities:
 
@@ -515,14 +562,20 @@ shipshield verify
 
 ---
 
-### 6.7 Background Engine Daemon (`engine`)
+### 6.8 Background Engine Daemon (`engine`)
 
 For large codebases, ShipShield includes a local daemon that runs in the background and keeps scanner environments cached for rapid, sub-second subsequent scans.
 
 #### Managing the Engine via CLI:
 ```bash
-# Start the background daemon
+# Start the background daemon (runs native host mode by default)
 shipshield engine start
+
+# Start the background daemon with containerized scanners
+shipshield engine start --docker
+
+# Start daemon in foreground (attached to current terminal for debugging)
+shipshield engine start --foreground
 
 # Check engine health and socket status
 shipshield engine status
@@ -545,7 +598,7 @@ systemctl --user status shipshield-engine.service
 
 ---
 
-### 6.8 Canceling Active Scans (`cancel`)
+### 6.9 Canceling Active Scans (`cancel`)
 
 Abort an active or queued background scan job:
 
@@ -555,7 +608,7 @@ shipshield cancel <scan-id>
 
 ---
 
-### 6.9 Global CLI Flags & Options
+### 6.10 Global CLI Flags & Options
 
 These flags can be used across any ShipShield command:
 
@@ -569,6 +622,7 @@ These flags can be used across any ShipShield command:
 | **`--non-interactive`** | Disable interactive terminal prompts. |
 | **`--config <path>`** | Specify a custom path to `.shipshield.yaml`. |
 | **`--project-dir <path>`** | Explicitly declare the project root path. |
+| **`--report-dir <path>`** | Override destination directory for generated reports. |
 | **`-v, --version`** | Print current ShipShield version (`1.0.0`). |
 | **`-h, --help`** | Display contextual help and flag options. |
 
@@ -579,96 +633,116 @@ These flags can be used across any ShipShield command:
 Place `.shipshield.yaml` in your project root to customize scanning rules:
 
 ```yaml
-version: "1.0"
+schema_version: 1
+
 project:
-  name: "my-web-app"
+  name: "my-service"
+  root: "."
+
+reports:
+  directory: ".shipshield/reports"
+  formats:
+    - "json"
+    - "markdown"
+  retain: 20
+
+scan:
+  secrets:
+    enabled: true
+  dependencies:
+    enabled: true
+  containers:
+    enabled: true
+  iac:
+    enabled: true
 
 policy:
-  # Severities that cause shipshield scan to exit with code 4 (policy failure)
+  # Severities that cause shipshield scan to exit with code 1 (policy failure)
   fail_on:
-    - critical
-    - high
+    - "critical"
+    - "high"
+
+  # Fail scan if a scanner fails or times out (exit code 4)
+  fail_on_incomplete: true
+
+  # Fail-closed policy switches for offline intelligence (exit code 8)
+  fail_on_missing_db: true
+  fail_on_stale_db: false
 
   # Enforce required scanner engines (fails with exit code 7 if unavailable)
   required_scanners:
-    - secrets
-    - dependencies
-
-  # Fail-closed policy switches for offline intelligence
-  fail_on_stale_db: true
-  fail_on_missing_db: true
+    - "secrets"
+    - "dependencies"
 
 # Offline vulnerability intelligence & database freshness thresholds
 database:
   freshness_threshold_days: 7
   stale_threshold_days: 30
-  auto_update_in_offline_mode: false
+  auto_update: false
 
-scanners:
-  secrets:
-    enabled: true
-    engine: "gitleaks"
-    exclude_paths:
-      - "tests/fixtures/**"
-      - "**/*.mock.json"
-
-  dependencies:
-    enabled: true
-    engine: "trivy"
-    ignore_unfixed: false
-
-  containers:
-    enabled: true
-    engine: "trivy"
-
-  iac:
-    enabled: true
-    engine: "checkov"
-
-reports:
-  directory: ".shipshield/reports"
-  formats:
-    - json
-    - markdown
+execution:
+  timeout_seconds: 600
+  max_parallel_scanners: 4
+  network: "allow"
+  exclude:
+    - ".git/**"
+    - "node_modules/**"
+    - "vendor/**"
+    - "dist/**"
+    - ".shipshield/**"
 ```
 
 ---
 
 ## Exit Code Contracts for CI/CD
 
-ShipShield uses deterministic, standardized exit codes so your CI/CD pipelines (GitHub Actions, GitLab CI, Jenkins) can cleanly branch on specific outcomes:
+ShipShield uses deterministic, standardized exit codes so your CI/CD pipelines (GitHub Actions, GitLab CI, Jenkins) can cleanly branch on specific outcomes without parsing terminal strings:
 
-| Exit Code | Name | Description |
-| :---: | :--- | :--- |
-| **`0`** | `PASSED` | All scanners completed cleanly; zero findings violate policy. |
-| **`1`** | `FINDINGS_DETECTED` | Security findings were detected (informational / non-policy failing). |
-| **`2`** | `USAGE_ERROR` / `CONFIG_ERROR` | Invalid CLI arguments, unrecognized flags, or corrupt `.shipshield.yaml`. |
-| **`3`** | `INTERNAL_ERROR` | Unhandled engine runtime exception or unexpected system failure. |
-| **`4`** | `POLICY_FAILED` / `INCOMPLETE` | Security gate failed (critical findings detected, scan timed out, or incomplete scanner). |
-| **`5`** | `REPORT_ERROR` | Error generating, reading, or parsing report artifacts from disk. |
-| **`6`** | `ENGINE_ERROR` | Background engine daemon error or IPC socket communication failure. |
-| **`7`** | `REQUIRED_SCANNER_UNAVAILABLE` | A scanner marked required by `--require` or `policy.required_scanners` is missing or failed. |
-| **`8`** | `DATABASE_ERROR` | Vulnerability intelligence database is missing, expired, corrupted, or failed atomic update. |
+| Exit Code | Name | Description | CI/CD Action |
+| :---: | :--- | :--- | :--- |
+| **`0`** | `PASSED` | All scanners completed cleanly; zero findings violate configured policy. | Gate passes (green). |
+| **`1`** | `POLICY_FAILED` | Security findings detected that violate configured severity thresholds (`--fail-on`). | Block merge / deployment (red). |
+| **`2`** | `USAGE_ERROR` | Invalid CLI arguments, unrecognized flags, or improper command syntax. | Pipeline configuration error. |
+| **`3`** | `CONFIGURATION_ERROR` | Corrupt, missing, or unparseable `.shipshield.yaml` configuration. | Fix project configuration. |
+| **`4`** | `INCOMPLETE` | Scan execution could not complete (scanner subprocess timed out or failed with `fail_on_incomplete`). | Retry scan or investigate scanner. |
+| **`5`** | `REPORT_ERROR` | Error generating, reading, writing, or parsing scan report artifacts on disk. | Check disk permissions / path. |
+| **`6`** | `FIX_ERROR` | Automated remediation planning or patch application failure. | Review patch or apply manually. |
+| **`7`** | `REQUIRED_SCANNER_UNAVAILABLE` | A scanner explicitly required via `--require` or `policy.required_scanners` is missing or failed. | Install missing scanner engine. |
+| **`8`** | `DATABASE_ERROR` | Vulnerability intelligence database is missing, stale, or failed atomic update. | Run `shipshield update-db`. |
+| **`10`** | `INTERNAL_ERROR` | Unhandled engine runtime exception or unexpected system failure. | Report issue / check logs. |
 
 ---
 
 ## Architecture Overview
 
+ShipShield is a pure standalone, CLI-only security engine:
+
 ```
 ShipShield/
 ├── apps/
-│   ├── cli/             # ShipShield CLI binary (shipshield launcher & commands)
-│   ├── api/             # Control plane REST API (Express + MongoDB)
-│   ├── web/             # Modern security dashboard (React + Vite)
-│   └── worker/          # Isolated scan queue runner (BullMQ + Redis)
+│   └── cli/             # ShipShield CLI entry point & unified command handlers
 ├── packages/
-│   ├── contracts/       # Canonical schemas, exit codes, and version constants
-│   ├── scan-core/       # Pure orchestration, policy engine, and SQLite job store
+│   ├── contracts/       # Canonical schemas, exit codes, finding types & version constants
+│   ├── scan-core/       # Pure orchestration, 17+ native static rules, sandbox & reporting
 │   ├── scanner-adapters/# Subprocess adapters (Gitleaks, Trivy, Checkov)
-│   └── schemas/         # Shared data and configuration contracts
-├── debian/              # Canonical Debian/Ubuntu packaging metadata
-└── docs/                # Architecture, threat model, CLI specs, and runbooks
+│   └── schemas/         # Shared data and configuration validation contracts
+├── docs/                # Comprehensive engineering and usage guides
+│   ├── architecture.md
+│   ├── cli-reference.md
+│   ├── online-offline.md
+│   ├── security-policies.md
+│   ├── configuration.md
+│   ├── installation.md
+│   ├── troubleshooting.md
+│   ├── development.md
+│   ├── release-process.md
+│   └── security-model.md
+├── debian/              # Canonical Debian/Ubuntu packaging metadata & overrides
+├── packaging/           # Debian package build pipeline (`build-deb.sh`)
+└── dist-deb/            # Pre-compiled standalone Debian package artifacts (.deb)
 ```
+
+See [docs/architecture.md](docs/architecture.md) for full architectural specifications.
 
 ---
 
@@ -708,6 +782,22 @@ docker run -d --name test-box ubuntu:24.04 sleep infinity
 docker cp dist-deb/shipshield_1.0.0-1~ubuntu24.04.1_all.deb test-box:/tmp/
 docker exec -it test-box bash -c "apt-get update && apt-get install -y /tmp/shipshield_1.0.0-1~ubuntu24.04.1_all.deb"
 docker exec -it test-box shipshield doctor
+```
+
+### Q: How do I cleanly uninstall or repair my ShipShield installation?
+**A**: If you installed via `install.sh`, you can run:
+```bash
+# Clean removal of binaries, symlinks, runtime files, and systemd services
+sudo ./install.sh --uninstall
+
+# Reinstall or repair dependencies and permissions
+sudo ./install.sh --repair
+```
+For manual removal:
+```bash
+sudo rm -f /usr/local/bin/shipshield /usr/bin/shipshield
+sudo rm -rf /usr/lib/shipshield
+rm -rf ~/.shipshield
 ```
 
 ### Q: How do I purge all local scan data?

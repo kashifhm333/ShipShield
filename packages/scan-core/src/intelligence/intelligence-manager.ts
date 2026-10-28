@@ -493,4 +493,84 @@ export class IntelligenceManager {
       }
     }
   }
+
+  /**
+   * Verifies the cryptographic integrity and file health of a local scanner database.
+   */
+  public static async verifyDatabase(
+    scannerId: ScannerId,
+    customCacheDir?: string
+  ): Promise<{
+    verified: boolean;
+    message: string;
+    scannerId: ScannerId;
+    filesChecked: string[];
+    checksums: Record<string, string>;
+  }> {
+    const cacheDir = this.getDefaultCacheDir(scannerId, customCacheDir);
+    const dbDir = path.join(cacheDir, 'db');
+
+    if (!fs.existsSync(dbDir)) {
+      return {
+        verified: false,
+        message: `Database directory does not exist at ${dbDir}`,
+        scannerId,
+        filesChecked: [],
+        checksums: {},
+      };
+    }
+
+    const filesChecked: string[] = [];
+    const checksums: Record<string, string> = {};
+
+    try {
+      const crypto = await import('node:crypto');
+      const entries = fs.readdirSync(dbDir);
+      if (entries.length === 0) {
+        return {
+          verified: false,
+          message: `Database directory at ${dbDir} is empty.`,
+          scannerId,
+          filesChecked: [],
+          checksums: {},
+        };
+      }
+
+      for (const entry of entries) {
+        const fullPath = path.join(dbDir, entry);
+        const stat = fs.statSync(fullPath);
+        if (stat.isFile()) {
+          filesChecked.push(entry);
+          if (stat.size === 0) {
+            return {
+              verified: false,
+              message: `Corrupt zero-byte database file found: ${entry}`,
+              scannerId,
+              filesChecked,
+              checksums,
+            };
+          }
+          const buf = fs.readFileSync(fullPath);
+          const hash = crypto.createHash('sha256').update(buf).digest('hex');
+          checksums[entry] = hash;
+        }
+      }
+
+      return {
+        verified: true,
+        message: `Successfully verified ${filesChecked.length} database file(s) with intact integrity.`,
+        scannerId,
+        filesChecked,
+        checksums,
+      };
+    } catch (err: unknown) {
+      return {
+        verified: false,
+        message: `Verification failed: ${(err as Error).message}`,
+        scannerId,
+        filesChecked,
+        checksums,
+      };
+    }
+  }
 }

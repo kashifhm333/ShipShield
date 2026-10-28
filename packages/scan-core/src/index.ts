@@ -22,3 +22,8 @@ export * from './engine/engine-client.js';
 export * from './engine/engine-server.js';
 export * from './jobs/job-store.js';
 export * from './intelligence/index.js';
+export * from './security/workspace-sandbox.js';
+export * from './policy/native-policy.types.js';
+export * from './policy/native-rules.js';
+export * from './policy/native-policy-registry.js';
+export * from './reports/sarif-formatter.js';

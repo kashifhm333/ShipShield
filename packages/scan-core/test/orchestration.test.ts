@@ -92,7 +92,7 @@ describe('ScanOrchestrator, Registry & Verification Suite', () => {
       const root = fs.mkdtempSync(path.join(os.tmpdir(), 'shipshield-orch-'));
       try {
         fs.writeFileSync(path.join(root, 'index.js'), 'console.log("clean");\n');
-        fs.writeFileSync(path.join(root, 'Dockerfile'), 'FROM node:20-alpine\n');
+        fs.writeFileSync(path.join(root, 'Dockerfile'), 'FROM node:20-alpine\nUSER node\n');
 
         const registry = new AdapterRegistry();
 

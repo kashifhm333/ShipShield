@@ -17,10 +17,26 @@ NC='\033[0m'
 INSTALL_DIR="/usr/lib/shipshield"
 BIN_DIR="/usr/local/bin"
 ACTION="install"
+TARGET_VERSION="1.0.0"
+PREFIX=""
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --prefix)
+      PREFIX="$2"
+      INSTALL_DIR="${PREFIX}/lib/shipshield"
+      BIN_DIR="${PREFIX}/bin"
+      shift 2
+      ;;
+    --version)
+      TARGET_VERSION="$2"
+      shift 2
+      ;;
+    --check)
+      ACTION="check"
+      shift
+      ;;
     --uninstall)
       ACTION="uninstall"
       shift
@@ -29,15 +45,22 @@ while [[ $# -gt 0 ]]; do
       ACTION="repair"
       shift
       ;;
+    --install)
+      ACTION="install"
+      shift
+      ;;
     --help|-h)
       echo "ShipShield Installer & Lifecycle Manager"
-      echo "Usage: sudo ./install.sh [OPTIONS]"
+      echo "Usage: ./install.sh [OPTIONS]"
       echo ""
       echo "Options:"
-      echo "  --install     Perform full installation (default)"
-      echo "  --repair      Reinstall binaries and verify scanner dependencies"
-      echo "  --uninstall   Remove ShipShield binaries, symlinks, and runtime libraries"
-      echo "  --help, -h    Display this help message"
+      echo "  --install           Perform full installation (default)"
+      echo "  --prefix <path>     Install to custom prefix (e.g. \$HOME/.local, root not required)"
+      echo "  --version <ver>     Specify release version to install (default: 1.0.0)"
+      echo "  --check             Run preflight diagnostics without installing"
+      echo "  --repair            Reinstall binaries and verify scanner dependencies"
+      echo "  --uninstall         Remove ShipShield binaries, symlinks, and runtime libraries"
+      echo "  --help, -h          Display this help message"
       exit 0
       ;;
     *)
@@ -48,10 +71,37 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# Root privilege check
-if [ "$EUID" -ne 0 ]; then
+if [ "$ACTION" = "check" ]; then
+    echo -e "${BLUE}====================================================${NC}"
+    echo -e "${GREEN}🔍   ShipShield Installation Preflight Check   🔍${NC}"
+    echo -e "${BLUE}====================================================${NC}"
+    echo "OS:            $(uname -s)"
+    echo "Architecture:  $(uname -m)"
+    echo "Target Ver:    ${TARGET_VERSION}"
+    echo "Install Dir:   ${INSTALL_DIR}"
+    echo "Bin Dir:       ${BIN_DIR}"
+    if command -v node >/dev/null 2>&1; then
+        echo -e "${GREEN}✔ Node.js:     $(node -v)${NC}"
+    else
+        echo -e "${RED}✖ Node.js:     Not found (Node.js >= 18.19.0 required)${NC}"
+    fi
+    if command -v git >/dev/null 2>&1; then
+        echo -e "${GREEN}✔ Git:         $(git --version)${NC}"
+    else
+        echo -e "${RED}✖ Git:         Not found${NC}"
+    fi
+    echo "Security Scanners:"
+    command -v gitleaks >/dev/null 2>&1 && echo -e "  ${GREEN}✔ gitleaks:  installed${NC}" || echo -e "  ${YELLOW}ℹ gitleaks:  not installed (optional)${NC}"
+    command -v trivy >/dev/null 2>&1 && echo -e "  ${GREEN}✔ trivy:     installed${NC}" || echo -e "  ${YELLOW}ℹ trivy:     not installed (optional)${NC}"
+    command -v checkov >/dev/null 2>&1 && echo -e "  ${GREEN}✔ checkov:   installed${NC}" || echo -e "  ${YELLOW}ℹ checkov:   not installed (optional)${NC}"
+    exit 0
+fi
+
+# Privilege check: only required if installing into system paths
+if [ -z "$PREFIX" ] && [ "$EUID" -ne 0 ]; then
     echo -e "${RED}Error: Root or sudo privileges required to manage /usr/lib/shipshield and /usr/local/bin.${NC}"
-    echo "Please run: sudo bash $0 $*"
+    echo "To install without root privileges, specify a user prefix: ./install.sh --prefix \"\$HOME/.local\""
+    echo "Or run with sudo: sudo bash $0 $*"
     exit 1
 fi
 
